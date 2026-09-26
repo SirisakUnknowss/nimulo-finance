@@ -189,3 +189,28 @@ export function buildDemoData(): DemoData {
     snapshots,
   };
 }
+
+/**
+ * A blank starting point for onboarding/promo recordings: keeps the profile and
+ * default category list (so add-transaction flows aren't awkward), but every
+ * account, transaction, budget, goal, loan, and investment starts truly empty.
+ */
+export function buildEmptyDemoData(): DemoData {
+  const seeded = buildDemoData();
+  return {
+    profile: seeded.profile,
+    accounts: [],
+    categories: seeded.categories,
+    transactions: [],
+    recurringTemplates: [],
+    budgets: [],
+    goals: [],
+    goalContributions: [],
+    loans: [],
+    loanPayments: [],
+    portfolios: [],
+    holdings: [],
+    trades: [],
+    snapshots: [],
+  };
+}

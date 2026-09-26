@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { buildDemoData, type DemoData } from "./seed";
+import { buildDemoData, buildEmptyDemoData, type DemoData } from "./seed";
 import { uid } from "@/lib/utils";
 import type {
   Account,
@@ -36,6 +36,7 @@ interface DemoStoreApi {
   data: DemoData;
   isDemo: true;
   resetDemoData: () => void;
+  startEmptyData: () => void;
   addAccount: (a: Omit<Account, "id" | "userId" | "createdAt" | "archived">) => Account;
   updateAccount: (id: string, patch: Partial<Account>) => void;
   archiveAccount: (id: string) => void;
@@ -85,6 +86,7 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
   }, [data, hydrated]);
 
   const resetDemoData = useCallback(() => setData(buildDemoData()), []);
+  const startEmptyData = useCallback(() => setData(buildEmptyDemoData()), []);
 
   const addAccount: DemoStoreApi["addAccount"] = useCallback((a) => {
     const account: Account = { ...a, id: uid("acc"), userId: "demo-user", archived: false, createdAt: new Date().toISOString() };
@@ -290,6 +292,7 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
       data,
       isDemo: true,
       resetDemoData,
+      startEmptyData,
       addAccount,
       updateAccount,
       archiveAccount,
@@ -319,6 +322,7 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
     [
       data,
       resetDemoData,
+      startEmptyData,
       addAccount,
       updateAccount,
       archiveAccount,

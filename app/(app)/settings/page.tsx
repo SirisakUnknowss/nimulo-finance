@@ -12,7 +12,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 export default function SettingsPage() {
   const finance = useFinanceData();
-  const { data, updateProfile, addCategory, resetDemoData, categoryById, accountById } = finance;
+  const { data, updateProfile, addCategory, resetDemoData, startEmptyData, categoryById, accountById } = finance;
   const { theme, setTheme } = useTheme();
   const [displayName, setDisplayName] = useState(data.profile.displayName);
   const [newCategory, setNewCategory] = useState("");
@@ -120,6 +120,19 @@ export default function SettingsPage() {
               onClick={() => confirm("รีเซ็ตข้อมูลสาธิตกลับเป็นค่าเริ่มต้นหรือไม่?") && resetDemoData()}
             >
               รีเซ็ตข้อมูลสาธิต
+            </Button>
+          </div>
+          <div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                confirm(
+                  "เริ่มต้นใหม่แบบไม่มีข้อมูลหรือไม่? เหมาะสำหรับบันทึกคลิปสาธิต/โปรโมทตั้งแต่เริ่มต้น (บัญชี รายการ งบประมาณ ฯลฯ จะถูกล้างทั้งหมด)",
+                ) && startEmptyData()
+              }
+            >
+              เริ่มต้นใหม่แบบไม่มีข้อมูล (สำหรับถ่ายคลิปโปรโมท)
             </Button>
           </div>
           <div>
