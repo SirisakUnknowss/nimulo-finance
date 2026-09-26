@@ -70,9 +70,9 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration from localStorage after mount
     setData(loadInitial());
     setHydrated(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -164,7 +164,6 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
       setData((d) => ({ ...d, transactions: [...toAdd, ...d.transactions] }));
     }
     return toAdd.length;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.transactions]);
 
   const addRecurringTemplate: DemoStoreApi["addRecurringTemplate"] = useCallback((t) => {

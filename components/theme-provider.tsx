@@ -16,7 +16,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const stored = window.localStorage.getItem("mono-theme") as Theme | null;
-    if (stored) setThemeState(stored);
+    if (stored) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time read of a viewer preference from storage after mount
+      setThemeState(stored);
+    }
   }, []);
 
   useEffect(() => {
