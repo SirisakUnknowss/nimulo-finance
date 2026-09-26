@@ -67,7 +67,10 @@ interface DemoStoreApi {
 const DemoStoreContext = createContext<DemoStoreApi | null>(null);
 
 export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
-  const [data, setData] = useState<DemoData>(() => loadInitial());
+  // Deterministic on both server and the first client render (never reads
+  // localStorage here) so hydration matches; the effect below swaps in any
+  // persisted data right after mount.
+  const [data, setData] = useState<DemoData>(() => buildDemoData());
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
