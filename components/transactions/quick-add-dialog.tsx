@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/misc";
 import { useFinanceData } from "@/lib/hooks/use-finance-data";
+import { transactionSchema } from "@/lib/validation/schemas";
 import type { TransactionType } from "@/lib/finance/types";
 
 interface Props {
@@ -39,34 +40,32 @@ export function QuickAddTransactionDialog({ open, onOpenChange }: Props) {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const amt = Number(amount);
-    if (!amt || amt <= 0) {
-      setError("กรุณาระบุจำนวนเงินให้ถูกต้อง");
+    const parsed = transactionSchema.safeParse({
+      type,
+      amount: Number(amount),
+      date,
+      accountId,
+      toAccountId: type === "transfer" ? toAccountId : null,
+      categoryId: type === "transfer" ? null : categoryId,
+      merchant: merchant || null,
+      note: note || null,
+    });
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "ข้อมูลไม่ถูกต้อง");
       return;
     }
-    if (!accountId) {
-      setError("กรุณาเลือกบัญชี");
-      return;
-    }
-    if (type === "transfer") {
-      if (!toAccountId || toAccountId === accountId) {
-        setError("กรุณาเลือกบัญชีปลายทางที่ต่างจากบัญชีต้นทาง");
-        return;
-      }
-      addTransfer({ amount: amt, date, fromAccountId: accountId, toAccountId, note });
+    const v = parsed.data;
+    if (v.type === "transfer") {
+      addTransfer({ amount: v.amount, date: v.date, fromAccountId: v.accountId, toAccountId: v.toAccountId!, note: v.note ?? undefined });
     } else {
-      if (!categoryId) {
-        setError("กรุณาเลือกหมวดหมู่");
-        return;
-      }
       addTransaction({
-        type,
-        amount: amt,
-        date,
-        accountId,
-        categoryId,
-        merchant: merchant || null,
-        note: note || null,
+        type: v.type,
+        amount: v.amount,
+        date: v.date,
+        accountId: v.accountId,
+        categoryId: v.categoryId ?? null,
+        merchant: v.merchant ?? null,
+        note: v.note ?? null,
       });
     }
     reset();

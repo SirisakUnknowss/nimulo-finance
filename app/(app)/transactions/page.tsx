@@ -68,7 +68,7 @@ export default function TransactionsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold">รายการทั้งหมด ({filtered.length})</h2>
+        <h2 className="text-lg font-semibold" suppressHydrationWarning>รายการทั้งหมด ({filtered.length})</h2>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}><Upload className="h-4 w-4" />นำเข้า CSV</Button>
           <Button variant="outline" size="sm" onClick={handleExport}><Download className="h-4 w-4" />ส่งออก CSV</Button>
