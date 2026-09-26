@@ -7,12 +7,13 @@ export function Badge({
   className,
   variant = "default",
   ...props
-}: React.HTMLAttributes<HTMLSpanElement> & { variant?: "default" | "success" | "warning" | "danger" | "outline" }) {
+}: React.HTMLAttributes<HTMLSpanElement> & { variant?: "default" | "success" | "warning" | "danger" | "transfer" | "outline" }) {
   const styles: Record<string, string> = {
     default: "bg-accent-soft text-accent",
     success: "bg-[color-mix(in_srgb,var(--success)_15%,transparent)] text-success",
-    warning: "bg-[color-mix(in_srgb,var(--warning)_18%,transparent)] text-warning",
+    warning: "bg-warning-soft text-warning",
     danger: "bg-[color-mix(in_srgb,var(--danger)_15%,transparent)] text-danger",
+    transfer: "bg-[color-mix(in_srgb,var(--transfer)_15%,transparent)] text-transfer",
     outline: "border border-border text-muted-foreground",
   };
   return (

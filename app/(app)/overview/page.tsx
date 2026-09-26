@@ -215,7 +215,7 @@ export default function OverviewPage() {
                     <p className="font-medium">{t.merchant || cat?.name || (t.type === "transfer" ? "โอนเงิน" : "รายการ")}</p>
                     <p className="text-xs text-muted-foreground">{t.date}</p>
                   </div>
-                  <p className={t.type === "income" ? "text-success" : t.type === "expense" ? "text-danger" : "text-muted-foreground"}>
+                  <p className={t.type === "income" ? "text-success" : t.type === "expense" ? "text-danger" : "text-transfer"}>
                     {t.type === "income" ? "+" : t.type === "expense" ? "-" : ""}{formatTHB(t.amount)}
                   </p>
                 </div>

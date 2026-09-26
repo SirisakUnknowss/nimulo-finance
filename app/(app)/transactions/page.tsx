@@ -136,7 +136,7 @@ export default function TransactionsPage() {
                       <tr key={t.id} className="border-b border-border/60">
                         <td className="py-2 pr-2 whitespace-nowrap">{t.date}</td>
                         <td className="py-2 pr-2">
-                          <Badge variant={t.type === "income" ? "success" : t.type === "expense" ? "danger" : "outline"}>
+                          <Badge variant={t.type === "income" ? "success" : t.type === "expense" ? "danger" : "transfer"}>
                             {t.type === "income" ? "รายรับ" : t.type === "expense" ? "รายจ่าย" : "โอนเงิน"}
                           </Badge>
                         </td>
@@ -145,7 +145,7 @@ export default function TransactionsPage() {
                           {cat && t.type !== "transfer" && <p className="text-xs text-muted-foreground">{cat.name}</p>}
                         </td>
                         <td className="py-2 pr-2 text-muted-foreground">{acc?.name ?? "-"}</td>
-                        <td className={`py-2 pr-2 text-right font-medium ${t.type === "income" ? "text-success" : t.type === "expense" ? "text-danger" : ""}`}>
+                        <td className={`py-2 pr-2 text-right font-medium ${t.type === "income" ? "text-success" : t.type === "expense" ? "text-danger" : "text-transfer"}`}>
                           {t.type === "income" ? "+" : t.type === "expense" ? "-" : ""}{formatTHB(t.amount)}
                         </td>
                         <td className="py-2 pr-2 text-right">
