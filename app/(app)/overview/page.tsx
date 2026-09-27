@@ -98,10 +98,11 @@ export default function OverviewPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>มูลค่าสุทธิ (Net Worth)</CardTitle>
+          <CardTitle>ทรัพย์สินสุทธิ</CardTitle>
         </CardHeader>
         <CardContent className="pt-2">
           <CardValue className="text-4xl">{formatTHB(netWorth.netWorth)}</CardValue>
+          <p className="mt-1 text-xs text-muted-foreground">มูลค่าทรัพย์สินทั้งหมดของคุณ หลังหักหนี้สินแล้ว</p>
           <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-muted-foreground">สินทรัพย์รวม</p>
@@ -117,7 +118,7 @@ export default function OverviewPage() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card>
-          <CardHeader><CardTitle>รายรับ</CardTitle></CardHeader>
+          <CardHeader><CardTitle>เงินที่ได้รับ</CardTitle></CardHeader>
           <CardContent className="pt-2">
             <CardValue>{formatTHB(totals.income)}</CardValue>
             {incomeDelta !== null && (
@@ -129,19 +130,19 @@ export default function OverviewPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>รายจ่าย</CardTitle></CardHeader>
+          <CardHeader><CardTitle>เงินที่ใช้ไป</CardTitle></CardHeader>
           <CardContent className="pt-2">
             <CardValue>{formatTHB(totals.expenses)}</CardValue>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>ส่วนต่างดำเนินงาน (Surplus)</CardTitle></CardHeader>
+          <CardHeader><CardTitle>เงินเหลือเดือนนี้</CardTitle></CardHeader>
           <CardContent className="pt-2">
             <CardValue className={totals.operatingSurplus >= 0 ? "text-success" : "text-danger"}>
               {formatTHB(totals.operatingSurplus)}
             </CardValue>
             <p className="mt-1 text-xs text-muted-foreground">
-              {surplusRatePct !== null ? `อัตราการออม ${surplusRatePct}%` : "ยังไม่มีรายรับในช่วงนี้"}
+              {surplusRatePct !== null ? `เงินที่ได้รับหักเงินที่ใช้ไปในเดือนนี้ · อัตราการออม ${surplusRatePct}%` : "ยังไม่มีรายรับในช่วงนี้"}
             </p>
           </CardContent>
         </Card>
@@ -162,7 +163,7 @@ export default function OverviewPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>แนวโน้มมูลค่าสุทธิ (6 เดือน)</CardTitle></CardHeader>
+          <CardHeader><CardTitle>แนวโน้มทรัพย์สินสุทธิ (6 เดือน)</CardTitle></CardHeader>
           <CardContent><TrendLineChart data={netWorthTrend} /></CardContent>
         </Card>
       </div>

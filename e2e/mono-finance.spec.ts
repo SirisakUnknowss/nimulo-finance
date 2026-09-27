@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 /**
- * Critical end-to-end workflows for MONO Finance, run against demo mode
+ * Critical end-to-end workflows for nimulo., run against demo mode
  * (no Supabase credentials required - the app auto-detects missing env
  * vars and serves the seeded, localStorage-backed demo dataset).
  */

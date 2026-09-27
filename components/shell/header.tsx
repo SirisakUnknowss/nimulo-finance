@@ -23,7 +23,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur lg:px-8">
       <div>
-        <h1 className="text-base font-semibold">{current?.label ?? "MONO Finance"}</h1>
+        <h1 className="text-base font-semibold">{current?.label ?? "nimulo."}</h1>
       </div>
       <div className="flex items-center gap-2">
         <Button size="sm" onClick={() => setQuickAddOpen(true)}>

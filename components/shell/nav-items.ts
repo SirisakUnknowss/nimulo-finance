@@ -19,8 +19,8 @@ export interface NavItem {
 
 export const NAV_ITEMS: NavItem[] = [
   { href: "/overview", label: "ภาพรวม", icon: LayoutDashboard },
-  { href: "/transactions", label: "รายการ", icon: ArrowLeftRight },
-  { href: "/accounts", label: "บัญชี", icon: Wallet },
+  { href: "/transactions", label: "รายการเงิน", icon: ArrowLeftRight },
+  { href: "/accounts", label: "บัญชีของฉัน", icon: Wallet },
   { href: "/budgets", label: "งบประมาณ", icon: PiggyBank },
   { href: "/goals", label: "เป้าหมาย", icon: Target },
   { href: "/investments", label: "การลงทุน", icon: LineChart },

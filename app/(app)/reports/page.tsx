@@ -100,7 +100,7 @@ export default function ReportsPage() {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle>แนวโน้มมูลค่าสุทธิ</CardTitle></CardHeader>
+        <CardHeader><CardTitle>แนวโน้มทรัพย์สินสุทธิ</CardTitle></CardHeader>
         <CardContent><TrendLineChart data={netWorthSeries} /></CardContent>
       </Card>
 

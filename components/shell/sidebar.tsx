@@ -10,8 +10,12 @@ export function Sidebar() {
   return (
     <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-border lg:bg-card lg:shrink-0">
       <div className="flex h-16 items-center gap-2 px-6">
-        <div className="h-7 w-7 rounded-lg bg-accent" aria-hidden />
-        <span className="font-semibold tracking-tight">MONO Finance</span>
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent text-sm font-semibold text-white" aria-hidden>
+          n
+        </div>
+        <span className="font-semibold tracking-tight lowercase">
+          nimulo<span className="text-accent">.</span>
+        </span>
       </div>
       <nav className="flex-1 space-y-1 px-3 py-2">
         {NAV_ITEMS.map((item) => {

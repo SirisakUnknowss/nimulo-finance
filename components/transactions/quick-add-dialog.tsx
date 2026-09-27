@@ -80,8 +80,8 @@ export function QuickAddTransactionDialog({ open, onOpenChange }: Props) {
         </DialogHeader>
         <Tabs value={type} onValueChange={(v) => setType(v as TransactionType)}>
           <TabsList className="mb-4 w-full">
-            <TabsTrigger value="expense" className="flex-1">รายจ่าย</TabsTrigger>
-            <TabsTrigger value="income" className="flex-1">รายรับ</TabsTrigger>
+            <TabsTrigger value="expense" className="flex-1">เงินออก</TabsTrigger>
+            <TabsTrigger value="income" className="flex-1">เงินเข้า</TabsTrigger>
             <TabsTrigger value="transfer" className="flex-1">โอนเงิน</TabsTrigger>
           </TabsList>
         </Tabs>

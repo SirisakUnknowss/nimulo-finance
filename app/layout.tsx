@@ -15,8 +15,8 @@ const notoThai = Noto_Sans_Thai({
 });
 
 export const metadata: Metadata = {
-  title: "MONO Finance",
-  description: "จัดการการเงินส่วนบุคคลของคุณในที่เดียว",
+  title: "nimulo. — การเงินที่ทุกคนเข้าใจได้",
+  description: "จัดการรายรับ รายจ่าย เงินออม หนี้สิน และการลงทุนของคุณในที่เดียว ผ่าน Dashboard ที่เรียบง่ายและเข้าใจได้",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
