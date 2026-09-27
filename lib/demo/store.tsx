@@ -35,6 +35,8 @@ function loadInitial(): DemoData {
 interface DemoStoreApi {
   data: DemoData;
   isDemo: true;
+  /** False until the post-mount effect has swapped in any localStorage-persisted data. */
+  hydrated: boolean;
   resetDemoData: () => void;
   startEmptyData: () => void;
   addAccount: (a: Omit<Account, "id" | "userId" | "createdAt" | "archived">) => Account;
@@ -294,6 +296,7 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
     () => ({
       data,
       isDemo: true,
+      hydrated,
       resetDemoData,
       startEmptyData,
       addAccount,
@@ -324,6 +327,7 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
     }),
     [
       data,
+      hydrated,
       resetDemoData,
       startEmptyData,
       addAccount,

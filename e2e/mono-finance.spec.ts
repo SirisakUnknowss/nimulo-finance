@@ -17,7 +17,7 @@ test.beforeEach(async ({ page }) => {
 test("enters demo mode and shows the Overview dashboard with seeded data", async ({ page }) => {
   await page.goto("/overview");
   await expect(page.getByRole("heading", { name: "ภาพรวม" })).toBeVisible();
-  await expect(page.getByText("ทรัพย์สินสุทธิ")).toBeVisible();
+  await expect(page.getByText("ทรัพย์สินสุทธิ", { exact: true })).toBeVisible();
   // Seeded demo accounts should be visible in the accounts summary card.
   await expect(page.getByText("บัญชีออมทรัพย์ (SCB)")).toBeVisible();
 });
@@ -91,4 +91,60 @@ test("views the Reports page with monthly cash flow and category charts", async 
   await expect(page.getByRole("heading", { name: "รายงานการเงิน" })).toBeVisible();
   await expect(page.getByText("สรุปเงินเข้า-เงินออกรายเดือน")).toBeVisible();
   await expect(page.getByText("งบประมาณเทียบกับยอดใช้จริง (เดือนนี้)")).toBeVisible();
+});
+
+test("first-run onboarding wizard walks a brand-new account through account, income, and expense steps", async ({ page }) => {
+  // Simulate a genuinely empty account (section 15 of the brand guide) by
+  // seeding an empty dataset directly, rather than relying on the demo
+  // reseed (which always ships 5 pre-populated accounts).
+  await page.goto("/overview");
+  await page.evaluate(() => {
+    const empty = {
+      profile: { id: "demo-user", displayName: "คุณสิริศักดิ์", baseCurrency: "THB", timezone: "Asia/Bangkok", theme: "system" },
+      accounts: [],
+      categories: [
+        { id: "cat_salary", userId: "demo-user", name: "เงินเดือน", kind: "income", color: "#467A64", archived: false },
+        { id: "cat_food", userId: "demo-user", name: "อาหาร", kind: "expense", color: "#C97B4A", archived: false },
+      ],
+      transactions: [],
+      recurringTemplates: [],
+      budgets: [],
+      goals: [],
+      goalContributions: [],
+      loans: [],
+      loanPayments: [],
+      portfolios: [],
+      holdings: [],
+      trades: [],
+      snapshots: [],
+    };
+    window.localStorage.setItem("mono-finance-demo-v1", JSON.stringify(empty));
+  });
+  await page.reload();
+
+  // Welcome screen (15.2)
+  await expect(page.getByText("เริ่มต้นเข้าใจเงินของคุณไปด้วยกัน")).toBeVisible();
+  await page.getByRole("button", { name: "เริ่มต้น" }).click();
+
+  // Step: first financial account (15.3 Step 2)
+  await page.getByPlaceholder("เช่น บัญชีออมทรัพย์, เงินสด").fill("บัญชีทดสอบ E2E");
+  await page.locator('input[type="number"]').first().fill("10000");
+  await page.getByRole("button", { name: "ถัดไป" }).click();
+
+  // Step: income (15.3 Step 3)
+  await expect(page.getByText("เพิ่มเงินที่ได้รับ")).toBeVisible();
+  await page.locator('input[type="number"]').first().fill("30000");
+  await page.locator("select").selectOption({ label: "เงินเดือน" });
+  await page.getByRole("button", { name: "ถัดไป" }).click();
+
+  // Step: expense (15.3 Step 4) - skip it to exercise the "not forced" path
+  await expect(page.getByText("เพิ่มเงินที่ใช้ไป")).toBeVisible();
+  await page.getByRole("button", { name: "ข้ามขั้นตอนนี้" }).click();
+
+  // Completion screen (15.3 Step 5) then the real dashboard
+  await expect(page.getByText("พร้อมแล้ว!")).toBeVisible();
+  await page.getByRole("button", { name: "ดูภาพรวมของคุณ" }).click();
+
+  await expect(page.getByText("บัญชีทดสอบ E2E")).toBeVisible();
+  await expect(page.getByText("฿40,000.00").first()).toBeVisible(); // 10,000 opening + 30,000 income
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardValue } from "@/components/ui/card";
 import { Badge, Progress } from "@/components/ui/misc";
@@ -9,6 +9,7 @@ import { useFinanceData } from "@/lib/hooks/use-finance-data";
 import { CashFlowChart } from "@/components/charts/cash-flow-chart";
 import { CategoryPieChart } from "@/components/charts/category-pie-chart";
 import { TrendLineChart } from "@/components/charts/trend-line-chart";
+import { OnboardingWizard } from "@/components/onboarding/onboarding-wizard";
 import { formatTHB, monthLabelThai, periodBounds, currentPeriod, shiftPeriod } from "@/lib/utils";
 import { computeNetWorth, computePeriodTotals } from "@/lib/finance/calculations";
 
@@ -16,8 +17,26 @@ type RangeOption = "this_month" | "prev_month" | "6m" | "12m";
 
 export default function OverviewPage() {
   const finance = useFinanceData();
-  const { data, netWorth, accountsWithBalances, budgetStatuses, goalsWithProgress } = finance;
+  const { data, hydrated, netWorth, accountsWithBalances, budgetStatuses, goalsWithProgress } = finance;
   const [range, setRange] = useState<RangeOption>("this_month");
+  // Decided once, right after the store has hydrated from localStorage
+  // (the very first render always sees the deterministic seed data, to
+  // keep server/client hydration in sync - see lib/demo/store.tsx). Once
+  // set, it no longer tracks data.accounts.length, so creating the first
+  // account mid-wizard doesn't cause the flow to vanish before the
+  // income/expense steps.
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingChecked, setOnboardingChecked] = useState(false);
+  const [justOnboarded, setJustOnboarded] = useState(false);
+
+  useEffect(() => {
+    if (hydrated && !onboardingChecked) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time check once the store has hydrated
+      setShowOnboarding(data.accounts.length === 0);
+      setOnboardingChecked(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated, onboardingChecked]);
 
   const nowPeriod = currentPeriod();
   const activePeriod = range === "prev_month" ? shiftPeriod(nowPeriod, -1) : nowPeriod;
@@ -82,8 +101,40 @@ export default function OverviewPage() {
 
   const recentTransactions = [...data.transactions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
 
+  if (showOnboarding) {
+    return (
+      <OnboardingWizard
+        onFinish={() => {
+          setShowOnboarding(false);
+          setJustOnboarded(true);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {justOnboarded && (
+        <Card className="border-accent/30 bg-accent-soft/40">
+          <CardContent className="flex flex-wrap items-center justify-between gap-3 pt-5">
+            <div>
+              <p className="text-sm font-medium">ตอนนี้คุณเริ่มเห็นภาพรวมการเงินแล้ว</p>
+              <p className="text-sm text-muted-foreground">
+                เมื่อพร้อม ลองเพิ่มงบประมาณ เป้าหมาย หนี้สิน หรือการลงทุนได้ทุกเมื่อ — ไม่บังคับตั้งค่าทุกอย่างตอนนี้
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Link href="/budgets"><Badge>งบประมาณ</Badge></Link>
+              <Link href="/goals"><Badge>เป้าหมาย</Badge></Link>
+              <Link href="/debts"><Badge>หนี้สิน</Badge></Link>
+              <Link href="/investments"><Badge>การลงทุน</Badge></Link>
+              <button type="button" onClick={() => setJustOnboarded(false)} className="text-xs text-muted-foreground underline underline-offset-2">
+                ปิด
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm text-muted-foreground">สวัสดี, {data.profile.displayName}</p>
