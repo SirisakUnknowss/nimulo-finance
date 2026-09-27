@@ -91,7 +91,7 @@ export default function SettingsPage() {
         <CardContent className="pt-2 space-y-3">
           <div className="flex flex-wrap gap-2">
             {data.categories.map((c) => (
-              <Badge key={c.id} variant="outline">{c.name} ({c.kind === "income" ? "รายรับ" : "รายจ่าย"})</Badge>
+              <Badge key={c.id} variant="outline">{c.name} ({c.kind === "income" ? "เงินเข้า" : "เงินออก"})</Badge>
             ))}
           </div>
           <form

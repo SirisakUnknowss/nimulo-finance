@@ -101,7 +101,7 @@ export default function DebtsPage() {
         <DialogContent>
           <DialogHeader><DialogTitle>บันทึกการชำระสินเชื่อ</DialogTitle></DialogHeader>
           <form onSubmit={handlePay} className="space-y-3">
-            <p className="text-xs text-muted-foreground">เงินต้นจะลดยอดหนี้และเงินสด ส่วนดอกเบี้ยจะถูกบันทึกเป็นรายจ่ายแยกต่างหาก</p>
+            <p className="text-xs text-muted-foreground">เงินต้นจะลดยอดหนี้และเงินสด ส่วนดอกเบี้ยจะถูกบันทึกเป็นเงินที่ใช้ไปแยกต่างหาก</p>
             <div className="grid grid-cols-2 gap-3">
               <div><Label>เงินต้น</Label><Input type="number" min="0" value={principal} onChange={(e) => setPrincipal(e.target.value)} /></div>
               <div><Label>ดอกเบี้ย</Label><Input type="number" min="0" value={interest} onChange={(e) => setInterest(e.target.value)} /></div>

@@ -69,7 +69,12 @@ export function ImportTransactionsDialog({ open, onOpenChange }: Props) {
     const parsed = rows
       .map((row) => {
         const rawType = row[idx("type")]?.toLowerCase().trim();
-        const type: TransactionType = rawType === "income" || rawType === "รายรับ" ? "income" : rawType === "transfer" || rawType === "โอนเงิน" ? "transfer" : "expense";
+        const type: TransactionType =
+          rawType === "income" || rawType === "รายรับ" || rawType === "เงินเข้า"
+            ? "income"
+            : rawType === "transfer" || rawType === "โอนเงิน"
+              ? "transfer"
+              : "expense";
         const accountId = accountIdByName(row[idx("account")] ?? "");
         if (!accountId) return null;
         const amount = Number(row[idx("amount")]);

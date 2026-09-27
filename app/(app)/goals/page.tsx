@@ -147,7 +147,7 @@ export default function GoalsPage() {
         <DialogContent>
           <DialogHeader><DialogTitle>{contribMode === "add" ? "สมทบเงินเข้าเป้าหมาย" : "ถอนเงินจากเป้าหมาย"}</DialogTitle></DialogHeader>
           <form onSubmit={handleContribute} className="space-y-3">
-            <p className="text-xs text-muted-foreground">การสมทบ/ถอนเงินเป็นการจัดสรรเงินที่มีอยู่แล้วในบัญชี ไม่ถือเป็นรายรับหรือรายจ่ายใหม่</p>
+            <p className="text-xs text-muted-foreground">การสมทบ/ถอนเงินเป็นการจัดสรรเงินที่มีอยู่แล้วในบัญชี ไม่ถือเป็นเงินเข้าหรือเงินออกใหม่</p>
             <div>
               <Label>จำนวนเงิน</Label>
               <Input type="number" min="0" step="0.01" value={contribAmount} onChange={(e) => setContribAmount(e.target.value)} required />

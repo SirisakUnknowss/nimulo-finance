@@ -17,7 +17,7 @@ test.beforeEach(async ({ page }) => {
 test("enters demo mode and shows the Overview dashboard with seeded data", async ({ page }) => {
   await page.goto("/overview");
   await expect(page.getByRole("heading", { name: "ภาพรวม" })).toBeVisible();
-  await expect(page.getByText("มูลค่าสุทธิ (Net Worth)")).toBeVisible();
+  await expect(page.getByText("ทรัพย์สินสุทธิ")).toBeVisible();
   // Seeded demo accounts should be visible in the accounts summary card.
   await expect(page.getByText("บัญชีออมทรัพย์ (SCB)")).toBeVisible();
 });
@@ -89,6 +89,6 @@ test("creates a goal and records a contribution to it", async ({ page }) => {
 test("views the Reports page with monthly cash flow and category charts", async ({ page }) => {
   await page.goto("/reports");
   await expect(page.getByRole("heading", { name: "รายงานการเงิน" })).toBeVisible();
-  await expect(page.getByText("สรุปรายรับ-รายจ่ายรายเดือน")).toBeVisible();
+  await expect(page.getByText("สรุปเงินเข้า-เงินออกรายเดือน")).toBeVisible();
   await expect(page.getByText("งบประมาณเทียบกับยอดใช้จริง (เดือนนี้)")).toBeVisible();
 });

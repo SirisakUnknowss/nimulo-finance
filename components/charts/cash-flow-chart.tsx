@@ -21,8 +21,8 @@ export function CashFlowChart({ data }: { data: CashFlowPoint[] }) {
           contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 }}
         />
         <Legend wrapperStyle={{ fontSize: 12 }} />
-        <Bar dataKey="income" name="รายรับ" fill="var(--accent)" radius={[4, 4, 0, 0]} />
-        <Bar dataKey="expenses" name="รายจ่าย" fill="var(--danger)" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="income" name="เงินเข้า" fill="var(--accent)" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="expenses" name="เงินออก" fill="var(--danger)" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

@@ -95,7 +95,7 @@ export default function ReportsPage() {
       </div>
 
       <Card>
-        <CardHeader><CardTitle>สรุปรายรับ-รายจ่ายรายเดือน</CardTitle></CardHeader>
+        <CardHeader><CardTitle>สรุปเงินเข้า-เงินออกรายเดือน</CardTitle></CardHeader>
         <CardContent><CashFlowChart data={monthlySeries} /></CardContent>
       </Card>
 
@@ -106,7 +106,7 @@ export default function ReportsPage() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Card>
-          <CardHeader><CardTitle>รายจ่ายตามหมวดหมู่ (ปีนี้)</CardTitle></CardHeader>
+          <CardHeader><CardTitle>เงินที่ใช้ไปตามหมวดหมู่ (ปีนี้)</CardTitle></CardHeader>
           <CardContent>{expenseSlices.length ? <CategoryPieChart data={expenseSlices} /> : <p className="py-8 text-center text-sm text-muted-foreground">ไม่มีข้อมูล</p>}</CardContent>
         </Card>
         <Card>

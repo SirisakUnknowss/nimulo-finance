@@ -142,7 +142,7 @@ export default function OverviewPage() {
               {formatTHB(totals.operatingSurplus)}
             </CardValue>
             <p className="mt-1 text-xs text-muted-foreground">
-              {surplusRatePct !== null ? `เงินที่ได้รับหักเงินที่ใช้ไปในเดือนนี้ · อัตราการออม ${surplusRatePct}%` : "ยังไม่มีรายรับในช่วงนี้"}
+              {surplusRatePct !== null ? `เงินที่ได้รับหักเงินที่ใช้ไปในเดือนนี้ · อัตราการออม ${surplusRatePct}%` : "ยังไม่มีเงินที่ได้รับในช่วงนี้"}
             </p>
           </CardContent>
         </Card>
@@ -150,16 +150,16 @@ export default function OverviewPage() {
 
       {(range === "6m" || range === "12m") && (
         <Card>
-          <CardHeader><CardTitle>กระแสเงินสดรายเดือน</CardTitle></CardHeader>
+          <CardHeader><CardTitle>เงินเข้าและเงินออกรายเดือน</CardTitle></CardHeader>
           <CardContent><CashFlowChart data={cashFlowData} /></CardContent>
         </Card>
       )}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Card>
-          <CardHeader><CardTitle>สัดส่วนรายจ่ายตามหมวดหมู่</CardTitle></CardHeader>
+          <CardHeader><CardTitle>สัดส่วนเงินที่ใช้ไปตามหมวดหมู่</CardTitle></CardHeader>
           <CardContent>
-            {expenseSlices.length ? <CategoryPieChart data={expenseSlices} /> : <p className="py-10 text-center text-sm text-muted-foreground">ไม่มีรายจ่ายในช่วงนี้</p>}
+            {expenseSlices.length ? <CategoryPieChart data={expenseSlices} /> : <p className="py-10 text-center text-sm text-muted-foreground">ไม่มีเงินที่ใช้ไปในช่วงนี้</p>}
           </CardContent>
         </Card>
         <Card>

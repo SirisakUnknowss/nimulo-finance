@@ -77,7 +77,7 @@ export default function InvestmentsPage() {
   }
 
   if (portfoliosWithMetrics.length === 0) {
-    return <EmptyState title="ยังไม่มีพอร์ตการลงทุน" description="เพิ่มพอร์ตการลงทุนเพื่อเริ่มติดตามหุ้น กองทุน และสินทรัพย์อื่นๆ" />;
+    return <EmptyState title="ยังไม่มีการลงทุนของฉัน" description="เพิ่มพอร์ตการลงทุนเพื่อเริ่มติดตามหุ้น กองทุน และสินทรัพย์อื่นๆ" />;
   }
 
   return (

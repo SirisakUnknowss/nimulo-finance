@@ -83,7 +83,7 @@ export default function TransactionsPage() {
             {dueTemplates.map((t) => (
               <div key={t.id} className="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-sm">
                 <div>
-                  <p className="font-medium">{t.merchant || (t.type === "income" ? "รายรับประจำ" : "รายจ่ายประจำ")}</p>
+                  <p className="font-medium">{t.merchant || (t.type === "income" ? "เงินเข้าประจำ" : "เงินออกประจำ")}</p>
                   <p className="text-xs text-muted-foreground">{formatTHB(t.amount)} · ทุกวันที่ {t.dayOfMonth ?? "-"} ของเดือน</p>
                 </div>
                 <Button size="sm" variant="outline" onClick={() => postRecurring(t.id, new Date().toISOString().slice(0, 10))}>
@@ -101,8 +101,8 @@ export default function TransactionsPage() {
             <Input placeholder="ค้นหา..." value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="col-span-2 lg:col-span-2" />
             <Select value={typeFilter} onChange={(e) => { setTypeFilter(e.target.value as TransactionType | "all"); setPage(1); }}>
               <option value="all">ทุกประเภท</option>
-              <option value="income">รายรับ</option>
-              <option value="expense">รายจ่าย</option>
+              <option value="income">เงินเข้า</option>
+              <option value="expense">เงินออก</option>
               <option value="transfer">โอนเงิน</option>
             </Select>
             <Select value={categoryFilter} onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}>
@@ -137,7 +137,7 @@ export default function TransactionsPage() {
                         <td className="py-2 pr-2 whitespace-nowrap">{t.date}</td>
                         <td className="py-2 pr-2">
                           <Badge variant={t.type === "income" ? "success" : t.type === "expense" ? "danger" : "transfer"}>
-                            {t.type === "income" ? "รายรับ" : t.type === "expense" ? "รายจ่าย" : "โอนเงิน"}
+                            {t.type === "income" ? "เงินเข้า" : t.type === "expense" ? "เงินออก" : "โอนเงิน"}
                           </Badge>
                         </td>
                         <td className="py-2 pr-2">
