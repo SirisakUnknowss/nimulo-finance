@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-label="nimulo brand identity presentation">
+  <rect width="1200" height="900" fill="#F7F8F6"/>
+  <g font-family="Arial, sans-serif" font-size="15" font-weight="600" letter-spacing="2" fill="#467A64">
+    <text x="72" y="80">PRIMARY SYMBOL</text><text x="640" y="80">HORIZONTAL LOCKUP</text><text x="72" y="486">DARK APPLICATION</text><text x="640" y="486">APP ICON</text>
+  </g>
+  <g transform="translate(157 118) scale(1.35)" fill="none" stroke="#467A64" stroke-width="25" stroke-linecap="round" stroke-linejoin="round"><path d="M45 157V93c0-29 17-47 45-47s45 18 45 47v64"/></g>
+  <circle cx="278.5" cy="289.45" r="16.875" fill="#467A64"/>
+  <g transform="translate(640 160) scale(.74)">
+    <path d="M45 157V93c0-29 17-47 45-47s45 18 45 47v64" fill="none" stroke="#467A64" stroke-width="25" stroke-linecap="round" stroke-linejoin="round"/><circle cx="90" cy="127" r="12.5" fill="#467A64"/>
+  </g>
+  <g fill="none" stroke="#1C2521" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" transform="translate(790 195) scale(.88)">
+    <path d="M7 75V35c0-14 9-23 22-23s22 9 22 23v40M75 31v44M101 75V35c0-14 8-23 20-23s20 9 20 23v40M141 35c0-14 8-23 20-23s20 9 20 23v40M207 17v35c0 15 9 24 22 24s22-9 22-24V17M278 0v75"/><circle cx="331" cy="44" r="31"/>
+  </g>
+  <circle cx="856" cy="202" r="5.3" fill="#1C2521"/><circle cx="1110" cy="261" r="6" fill="#467A64"/>
+  <rect x="72" y="528" width="540" height="290" rx="14" fill="#1C2521"/>
+  <g transform="translate(155 585) scale(1.17)" fill="none" stroke="#DCE9E1" stroke-width="25" stroke-linecap="round" stroke-linejoin="round"><path d="M45 157V93c0-29 17-47 45-47s45 18 45 47v64"/></g><circle cx="260.3" cy="733.6" r="14.625" fill="#DCE9E1"/>
+  <g fill="none" stroke="#F7F8F6" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" transform="translate(343 641) scale(.62)"><path d="M7 75V35c0-14 9-23 22-23s22 9 22 23v40M75 31v44M101 75V35c0-14 8-23 20-23s20 9 20 23v40M141 35c0-14 8-23 20-23s20 9 20 23v40M207 17v35c0 15 9 24 22 24s22-9 22-24V17M278 0v75"/><circle cx="331" cy="44" r="31"/></g>
+  <circle cx="389.5" cy="647" r="3.7" fill="#F7F8F6"/><circle cx="580" cy="688" r="4" fill="#DCE9E1"/>
+  <rect x="728" y="528" width="290" height="290" rx="62" fill="#467A64"/>
+  <path d="M816 740V661c0-36 21-57 57-57s57 21 57 57v79" fill="none" stroke="#F7F8F6" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="873" cy="701" r="16" fill="#F7F8F6"/>
+</svg>

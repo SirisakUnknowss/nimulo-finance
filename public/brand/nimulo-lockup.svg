@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 180" role="img" aria-label="nimulo.">
+  <g fill="none" stroke="#467A64" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" transform="translate(2 2) scale(.82)">
+    <path d="M45 157V93c0-29 17-47 45-47s45 18 45 47v64"/>
+  </g>
+  <circle cx="75.8" cy="106.1" r="10.25" fill="#467A64"/>
+  <g fill="none" stroke="#1C2521" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" transform="translate(166 49)">
+    <path d="M7 75V35c0-14 9-23 22-23s22 9 22 23v40"/>
+    <path d="M75 31v44"/><path d="M101 75V35c0-14 8-23 20-23s20 9 20 23v40M141 35c0-14 8-23 20-23s20 9 20 23v40"/>
+    <path d="M207 17v35c0 15 9 24 22 24s22-9 22-24V17"/>
+    <path d="M278 0v75"/>
+    <circle cx="331" cy="44" r="31"/>
+  </g>
+  <circle cx="241" cy="57" r="6" fill="#1C2521"/>
+  <circle cx="546" cy="119" r="6.7" fill="#467A64"/>
+</svg>

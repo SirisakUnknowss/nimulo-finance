@@ -22,7 +22,9 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur lg:px-8">
-      <div>
+      <div className="flex items-center gap-2">
+        {/* eslint-disable-next-line @next/next/no-img-element -- static brand SVG, no next/image optimization needed */}
+        <img src="/brand/nimulo-symbol.svg" alt="" className="h-5 w-5 lg:hidden" aria-hidden />
         <h1 className="text-base font-semibold">{current?.label ?? "nimulo."}</h1>
       </div>
       <div className="flex items-center gap-2">

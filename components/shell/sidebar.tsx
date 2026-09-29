@@ -10,9 +10,8 @@ export function Sidebar() {
   return (
     <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-border lg:bg-card lg:shrink-0">
       <div className="flex h-16 items-center gap-2 px-6">
-        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent text-sm font-semibold text-white" aria-hidden>
-          n
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element -- static brand SVG, no next/image optimization needed */}
+        <img src="/brand/nimulo-symbol.svg" alt="" className="h-6 w-6" aria-hidden />
         <span className="font-semibold tracking-tight lowercase">
           nimulo<span className="text-accent">.</span>
         </span>
