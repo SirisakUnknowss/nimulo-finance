@@ -184,7 +184,7 @@ export function OnboardingWizard({ onFinish }: { onFinish: () => void }) {
             </div>
             <div className="text-left">
               <Label>ชื่อของคุณ</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="เช่น ศิริศักดิ์" autoFocus />
+              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="ชื่อที่ต้องการให้เรียก" autoFocus />
             </div>
             <Button
               size="lg"

@@ -24,7 +24,13 @@ function loadInitial(): DemoData {
   if (typeof window === "undefined") return buildEmptyDemoData();
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as DemoData;
+    if (raw) {
+      const parsed = JSON.parse(raw) as DemoData;
+      // Earlier versions auto-loaded mock seed data; discard it so those
+      // browsers start fresh. Data the user created themselves is kept.
+      const isOldSeed = parsed.accounts?.some((a) => a.id === "acc_bank_main");
+      if (!isOldSeed) return parsed;
+    }
   } catch {
     // ignore corrupt storage, fall through to fresh seed
   }
