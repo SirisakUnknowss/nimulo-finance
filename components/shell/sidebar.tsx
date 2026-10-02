@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { assetPath } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS } from "./nav-items";
@@ -11,7 +12,7 @@ export function Sidebar() {
     <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-border lg:bg-card lg:shrink-0">
       <div className="flex h-16 items-center gap-2 px-6">
         {/* eslint-disable-next-line @next/next/no-img-element -- static brand SVG, no next/image optimization needed */}
-        <img src="/brand/nimulo-symbol.svg" alt="" className="h-6 w-6" aria-hidden />
+        <img src={assetPath("/brand/nimulo-symbol.svg")} alt="" className="h-6 w-6" aria-hidden />
         <span className="font-semibold tracking-tight lowercase">
           nimulo<span className="text-accent">.</span>
         </span>

@@ -13,6 +13,8 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   basePath: isGithubPages ? `/${repoName}` : undefined,
   assetPrefix: isGithubPages ? `/${repoName}/` : undefined,
+  // Raw <img src> doesn't get basePath automatically; expose it for assetPath().
+  env: { NEXT_PUBLIC_BASE_PATH: isGithubPages ? `/${repoName}` : "" },
 };
 
 export default nextConfig;

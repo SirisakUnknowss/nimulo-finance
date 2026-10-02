@@ -66,3 +66,8 @@ export function shiftPeriod(period: string, delta: number): string {
 export function uid(prefix = "id"): string {
   return `${prefix}_${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36)}`;
 }
+
+/** Prefix a public/ asset path with the deploy basePath (needed for raw <img>/<a>). */
+export function assetPath(path: string): string {
+  return `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${path}`;
+}
