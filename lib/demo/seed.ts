@@ -198,7 +198,7 @@ export function buildDemoData(): DemoData {
 export function buildEmptyDemoData(): DemoData {
   const seeded = buildDemoData();
   return {
-    profile: seeded.profile,
+    profile: { ...seeded.profile, displayName: "" },
     accounts: [],
     categories: seeded.categories,
     transactions: [],

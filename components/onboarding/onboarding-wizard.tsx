@@ -40,7 +40,8 @@ const STEP_LABELS: Record<Step, string> = {
 };
 
 export function OnboardingWizard({ onFinish }: { onFinish: () => void }) {
-  const { data, addAccount, addTransaction } = useFinanceData();
+  const { data, addAccount, addTransaction, updateProfile } = useFinanceData();
+  const [name, setName] = useState(data.profile.displayName);
   const [step, setStep] = useState<Step>("welcome");
   const [error, setError] = useState<string | null>(null);
 
@@ -181,7 +182,18 @@ export function OnboardingWizard({ onFinish }: { onFinish: () => void }) {
                 เพิ่มข้อมูลเพียงเล็กน้อย แล้วเราจะช่วยแสดงภาพรวมการเงินของคุณ ไม่จำเป็นต้องมีความรู้ทางการเงินมาก่อน
               </p>
             </div>
-            <Button size="lg" className="w-full" onClick={() => goTo("account")}>
+            <div className="text-left">
+              <Label>ชื่อของคุณ</Label>
+              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="เช่น ศิริศักดิ์" autoFocus />
+            </div>
+            <Button
+              size="lg"
+              className="w-full"
+              onClick={() => {
+                if (name.trim()) updateProfile({ displayName: name.trim() });
+                goTo("account");
+              }}
+            >
               เริ่มต้น
             </Button>
             <button type="button" onClick={onFinish} className="text-xs text-muted-foreground underline underline-offset-2">

@@ -137,7 +137,7 @@ export default function OverviewPage() {
       )}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-sm text-muted-foreground">สวัสดี, {data.profile.displayName}</p>
+          <p className="text-sm text-muted-foreground">สวัสดี{data.profile.displayName ? `, ${data.profile.displayName}` : ""}</p>
         </div>
         <Select value={range} onChange={(e) => setRange(e.target.value as RangeOption)} className="w-48">
           <option value="this_month">เดือนนี้</option>

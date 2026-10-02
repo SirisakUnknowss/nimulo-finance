@@ -21,15 +21,14 @@ import type {
 const STORAGE_KEY = "mono-finance-demo-v1";
 
 function loadInitial(): DemoData {
-  if (typeof window === "undefined") return buildDemoData();
+  if (typeof window === "undefined") return buildEmptyDemoData();
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw) as DemoData;
   } catch {
     // ignore corrupt storage, fall through to fresh seed
   }
-  const fresh = buildDemoData();
-  return fresh;
+  return buildEmptyDemoData();
 }
 
 interface DemoStoreApi {
@@ -69,10 +68,11 @@ interface DemoStoreApi {
 const DemoStoreContext = createContext<DemoStoreApi | null>(null);
 
 export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
+  // Starts empty: a new user fills in their own data via onboarding.
   // Deterministic on both server and the first client render (never reads
   // localStorage here) so hydration matches; the effect below swaps in any
   // persisted data right after mount.
-  const [data, setData] = useState<DemoData>(() => buildDemoData());
+  const [data, setData] = useState<DemoData>(() => buildEmptyDemoData());
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
