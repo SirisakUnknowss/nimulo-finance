@@ -1,4 +1,4 @@
-# nimulo. mobile (Expo / React Native)
+# nimulo mobile (Expo / React Native)
 
 iOS + Android app. Shares the finance logic, types, validation and demo store
 with the web app by importing `../lib` (see `metro.config.js`).

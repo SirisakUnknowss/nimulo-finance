@@ -26,7 +26,7 @@ export function Header() {
       <div className="flex items-center gap-2">
         {/* eslint-disable-next-line @next/next/no-img-element -- static brand SVG, no next/image optimization needed */}
         <img src={assetPath("/brand/nimulo-symbol.svg")} alt="" className="h-5 w-5 lg:hidden" aria-hidden />
-        <h1 className="text-base font-semibold">{current?.label ?? "nimulo."}</h1>
+        <h1 className="text-base font-semibold">{current?.label ?? "nimulo"}</h1>
       </div>
       <div className="flex items-center gap-2">
         <Button size="sm" onClick={() => setQuickAddOpen(true)}>

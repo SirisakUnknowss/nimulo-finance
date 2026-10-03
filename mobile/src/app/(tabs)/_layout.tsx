@@ -18,6 +18,10 @@ export default function TabsLayout() {
         <NativeTabs.Trigger.Label>บัญชี</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="wallet.bifold.fill" md="account_balance_wallet" />
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="plan">
+        <NativeTabs.Trigger.Label>แผน</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="target" md="flag" />
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
         <NativeTabs.Trigger.Label>ตั้งค่า</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="gearshape.fill" md="settings" />

@@ -1,6 +1,6 @@
-# nimulo.
+# nimulo
 
-nimulo. — "Money, made simple." A minimalist personal finance dashboard: track
+nimulo — "Money, made simple." A minimalist personal finance dashboard: track
 income, expenses, accounts, budgets, goals, investments, and debts in one
 place. The interface language is Thai; code, database identifiers, and this
 documentation are in English.

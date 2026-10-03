@@ -18,14 +18,14 @@ const notoThai = Noto_Sans_Thai({
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 export const metadata: Metadata = {
-  title: "nimulo. — การเงินที่ทุกคนเข้าใจได้",
+  title: "nimulo — การเงินที่ทุกคนเข้าใจได้",
   description: "จัดการรายรับ รายจ่าย เงินออม หนี้สิน และการลงทุนของคุณในที่เดียว ผ่าน Dashboard ที่เรียบง่ายและเข้าใจได้",
   manifest: `${base}/manifest.webmanifest`,
   icons: {
     icon: [{ url: `${base}/icons/icon-192.png`, sizes: "192x192", type: "image/png" }],
     apple: [{ url: `${base}/icons/apple-touch-icon.png`, sizes: "180x180" }],
   },
-  appleWebApp: { capable: true, title: "nimulo.", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "nimulo", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = { themeColor: "#467A64", viewportFit: "cover" };

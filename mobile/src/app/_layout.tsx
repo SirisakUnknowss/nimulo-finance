@@ -25,6 +25,9 @@ function Navigator() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="add-transaction" options={{ presentation: "modal" }} />
         <Stack.Screen name="add-account" options={{ presentation: "modal" }} />
+        <Stack.Screen name="add-budget" options={{ presentation: "modal" }} />
+        <Stack.Screen name="add-goal" options={{ presentation: "modal" }} />
+        <Stack.Screen name="goal-contribute" options={{ presentation: "modal" }} />
       </Stack.Protected>
     </Stack>
   );

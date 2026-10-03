@@ -22,7 +22,7 @@ export default function Settings() {
         <Button title="บันทึก" onPress={() => updateProfile({ displayName: name.trim() })} />
       </GlassCard>
       <GlassCard>
-        <Muted>ข้อมูลทั้งหมดถูกเก็บไว้ในเครื่องนี้เท่านั้น nimulo. ไม่เชื่อมต่อกับสถาบันการเงินใดๆ</Muted>
+        <Muted>ข้อมูลทั้งหมดถูกเก็บไว้ในเครื่องนี้เท่านั้น nimulo ไม่เชื่อมต่อกับสถาบันการเงินใดๆ</Muted>
         <Button title="ลบข้อมูลทั้งหมด" variant="danger" onPress={clearAll} />
       </GlassCard>
     </Screen>

@@ -1,6 +1,6 @@
 {
-  "name": "nimulo.",
-  "short_name": "nimulo.",
+  "name": "nimulo",
+  "short_name": "nimulo",
   "description": "จัดการรายรับ รายจ่าย เงินออม หนี้สิน และการลงทุนของคุณในที่เดียว",
   "start_url": "./",
   "scope": "./",

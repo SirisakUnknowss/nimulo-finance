@@ -14,7 +14,7 @@ export function Sidebar() {
         {/* eslint-disable-next-line @next/next/no-img-element -- static brand SVG, no next/image optimization needed */}
         <img src={assetPath("/brand/nimulo-symbol.svg")} alt="" className="h-6 w-6" aria-hidden />
         <span className="font-semibold tracking-tight lowercase">
-          nimulo<span className="text-accent">.</span>
+          nimulo
         </span>
       </div>
       <nav className="flex-1 space-y-1 px-3 py-2">

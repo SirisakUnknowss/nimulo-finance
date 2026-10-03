@@ -99,6 +99,16 @@ export function Row({ left, right, sub, rightColor }: { left: string; right: str
   );
 }
 
+export function Progress({ ratio, color }: { ratio: number; color: string }) {
+  const t = useTheme();
+  const pct = Math.max(0, Math.min(1, ratio)) * 100;
+  return (
+    <View style={{ height: 8, borderRadius: 4, backgroundColor: t.accentSoft, marginTop: 10, overflow: "hidden" }}>
+      <View style={{ width: `${pct}%`, height: 8, borderRadius: 4, backgroundColor: color }} />
+    </View>
+  );
+}
+
 export function Muted({ children }: { children: ReactNode }) {
   const t = useTheme();
   return <Text style={{ color: t.muted, fontSize: 14, lineHeight: 20 }}>{children}</Text>;

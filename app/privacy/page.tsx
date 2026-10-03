@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "นโยบายความเป็นส่วนตัว · Privacy Policy — nimulo.",
-  description: "nimulo. เก็บข้อมูลการเงินของคุณไว้ในอุปกรณ์ของคุณเท่านั้น",
+  title: "นโยบายความเป็นส่วนตัว · Privacy Policy — nimulo",
+  description: "nimulo เก็บข้อมูลการเงินของคุณไว้ในอุปกรณ์ของคุณเท่านั้น",
 };
 
 const UPDATED = "3 ตุลาคม 2569 · October 3, 2026";
@@ -30,7 +30,7 @@ export default function PrivacyPage() {
 
         <Section title="สรุปสั้นๆ">
           <p>
-            nimulo. เก็บข้อมูลการเงินที่คุณบันทึก (บัญชี รายการรายรับรายจ่าย และอื่นๆ) ไว้ในอุปกรณ์ของคุณเท่านั้น
+            nimulo เก็บข้อมูลการเงินที่คุณบันทึก (บัญชี รายการรายรับรายจ่าย และอื่นๆ) ไว้ในอุปกรณ์ของคุณเท่านั้น
             เราไม่มีเซิร์ฟเวอร์เก็บข้อมูลของคุณ ไม่มีระบบสมัครสมาชิก และไม่เชื่อมต่อกับธนาคารหรือสถาบันการเงินใดๆ
           </p>
         </Section>
@@ -66,7 +66,7 @@ export default function PrivacyPage() {
         </Section>
 
         <Section title="เด็ก">
-          <p>nimulo. ไม่ได้มุ่งเป้าไปที่เด็กอายุต่ำกว่า 13 ปี และเราไม่รวบรวมข้อมูลส่วนบุคคลจากผู้ใช้ใดๆ</p>
+          <p>nimulo ไม่ได้มุ่งเป้าไปที่เด็กอายุต่ำกว่า 13 ปี และเราไม่รวบรวมข้อมูลส่วนบุคคลจากผู้ใช้ใดๆ</p>
         </Section>
 
         <Section title="การเปลี่ยนแปลงนโยบาย">
@@ -88,7 +88,7 @@ export default function PrivacyPage() {
 
         <Section title="Summary">
           <p>
-            nimulo. keeps the financial data you enter (accounts, income and expense transactions, and so on) only on your own
+            nimulo keeps the financial data you enter (accounts, income and expense transactions, and so on) only on your own
             device. We run no server that stores your data, have no sign-up, and do not connect to banks or financial
             institutions.
           </p>
@@ -125,7 +125,7 @@ export default function PrivacyPage() {
         </Section>
 
         <Section title="Children">
-          <p>nimulo. is not directed at children under 13, and we do not collect personal information from any user.</p>
+          <p>nimulo is not directed at children under 13, and we do not collect personal information from any user.</p>
         </Section>
 
         <Section title="Changes">
