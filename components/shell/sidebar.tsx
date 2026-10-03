@@ -9,7 +9,7 @@ import { NAV_ITEMS } from "./nav-items";
 export function Sidebar() {
   const pathname = usePathname();
   return (
-    <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-border lg:bg-card lg:shrink-0">
+    <aside className="hidden lg:flex lg:w-64 lg:flex-col glass lg:shrink-0 lg:rounded-none lg:border-y-0 lg:border-l-0">
       <div className="flex h-16 items-center gap-2 px-6">
         {/* eslint-disable-next-line @next/next/no-img-element -- static brand SVG, no next/image optimization needed */}
         <img src={assetPath("/brand/nimulo-symbol.svg")} alt="" className="h-6 w-6" aria-hidden />

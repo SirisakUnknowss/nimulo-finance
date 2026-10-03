@@ -74,6 +74,91 @@ body {
   font-family: var(--font-sans);
 }
 
+/* ---- Liquid Glass (iOS 26 style) ----
+   Translucent, blurred, saturated surfaces with a specular edge highlight.
+   Falls back to solid surfaces where backdrop-filter is unavailable or the
+   user asks for reduced transparency. */
+:root {
+  --glass-bg: rgb(255 255 255 / 0.55);
+  --glass-bg-strong: rgb(255 255 255 / 0.72);
+  --glass-border: rgb(255 255 255 / 0.65);
+  --glass-edge: rgb(255 255 255 / 0.9);
+  --glass-shadow: 0 8px 32px rgb(31 60 48 / 0.10), 0 1px 2px rgb(31 60 48 / 0.06);
+  --ambient-a: rgb(70 122 100 / 0.28);
+  --ambient-b: rgb(91 117 137 / 0.22);
+  --ambient-c: rgb(220 233 225 / 0.9);
+}
+
+:root[data-theme="dark"] {
+  --glass-bg: rgb(30 38 34 / 0.50);
+  --glass-bg-strong: rgb(24 31 27 / 0.72);
+  --glass-border: rgb(255 255 255 / 0.10);
+  --glass-edge: rgb(255 255 255 / 0.22);
+  --glass-shadow: 0 8px 32px rgb(0 0 0 / 0.35), 0 1px 2px rgb(0 0 0 / 0.3);
+  --ambient-a: rgb(111 166 140 / 0.22);
+  --ambient-b: rgb(139 167 187 / 0.14);
+  --ambient-c: rgb(15 19 17 / 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --glass-bg: rgb(30 38 34 / 0.50);
+    --glass-bg-strong: rgb(24 31 27 / 0.72);
+    --glass-border: rgb(255 255 255 / 0.10);
+    --glass-edge: rgb(255 255 255 / 0.22);
+    --glass-shadow: 0 8px 32px rgb(0 0 0 / 0.35), 0 1px 2px rgb(0 0 0 / 0.3);
+    --ambient-a: rgb(111 166 140 / 0.22);
+    --ambient-b: rgb(139 167 187 / 0.14);
+    --ambient-c: rgb(15 19 17 / 1);
+  }
+}
+
+/* Soft colour fields behind the UI give the glass something to refract. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 40rem at 10% -10%, var(--ambient-a), transparent 60%),
+    radial-gradient(50rem 36rem at 100% 10%, var(--ambient-b), transparent 60%),
+    radial-gradient(50rem 40rem at 50% 110%, var(--ambient-a), transparent 60%),
+    var(--background);
+}
+
+.glass,
+.glass-strong {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-edge);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+}
+.glass-strong {
+  background: var(--glass-bg-strong);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-strong {
+    background: var(--card);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-strong {
+    background: var(--card);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;

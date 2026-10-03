@@ -9,7 +9,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header />
-        <main className="flex-1 px-4 pb-20 pt-4 lg:px-8 lg:pb-8 lg:pt-6"><HydrationGate>{children}</HydrationGate></main>
+        <main className="flex-1 px-4 pb-28 pt-4 lg:px-8 lg:pb-8 lg:pt-6"><HydrationGate>{children}</HydrationGate></main>
         <MobileNav />
       </div>
     </div>

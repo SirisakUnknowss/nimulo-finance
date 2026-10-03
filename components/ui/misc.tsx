@@ -38,7 +38,7 @@ export function Progress({ value, className, indicatorClassName }: { value: numb
 
 export const Tabs = TabsPrimitive.Root;
 export const TabsList = ({ className, ...props }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>) => (
-  <TabsPrimitive.List className={cn("inline-flex gap-1 rounded-lg border border-border bg-card p-1", className)} {...props} />
+  <TabsPrimitive.List className={cn("inline-flex gap-1 rounded-lg border border-border bg-card/60 p-1", className)} {...props} />
 );
 export const TabsTrigger = ({ className, ...props }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>) => (
   <TabsPrimitive.Trigger

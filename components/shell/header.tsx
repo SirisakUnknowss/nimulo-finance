@@ -22,7 +22,7 @@ export function Header() {
   const ThemeIcon = theme === "light" ? Sun : theme === "dark" ? Moon : Monitor;
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur lg:px-8">
+    <header className="glass sticky top-0 z-30 flex h-16 items-center justify-between rounded-none border-x-0 border-t-0 px-4 lg:px-8">
       <div className="flex items-center gap-2">
         {/* eslint-disable-next-line @next/next/no-img-element -- static brand SVG, no next/image optimization needed */}
         <img src={assetPath("/brand/nimulo-symbol.svg")} alt="" className="h-5 w-5 lg:hidden" aria-hidden />

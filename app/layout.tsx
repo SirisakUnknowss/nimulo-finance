@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, title: "nimulo.", statusBarStyle: "default" },
 };
 
-export const viewport: Viewport = { themeColor: "#467A64" };
+export const viewport: Viewport = { themeColor: "#467A64", viewportFit: "cover" };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
