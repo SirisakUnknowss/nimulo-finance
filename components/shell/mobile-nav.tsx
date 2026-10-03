@@ -101,7 +101,9 @@ export function MobileNav() {
       <div ref={trackRef} className="relative flex">
         {items.map((item, i) => {
           const Icon = item.icon;
-          const underLens = pressed && i === shownIndex;
+          // The lens carries its own copy of the active tab; hide the original so a
+          // blurred ghost of it never shows through the glass.
+          const underLens = i === shownIndex;
           return (
             <Link
               key={item.href}

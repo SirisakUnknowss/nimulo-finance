@@ -80,6 +80,9 @@ body {
    user asks for reduced transparency. */
 :root {
   --glass-bg: rgb(255 255 255 / 0.55);
+  --glass-blur: 24px;
+  --card-glass-bg: rgb(255 255 255 / 0.62);
+  --card-glass-blur: 20px;
   --glass-bg-strong: rgb(255 255 255 / 0.72);
   --glass-border: rgb(255 255 255 / 0.65);
   --glass-edge: rgb(255 255 255 / 0.9);
@@ -94,33 +97,37 @@ body {
 }
 
 :root[data-theme="dark"] {
-  --glass-bg: rgb(30 38 34 / 0.50);
-  --glass-bg-strong: rgb(24 31 27 / 0.72);
+  --glass-bg: rgb(26 33 29 / 0.78);--glass-blur: 12px;
+  --card-glass-bg: rgb(22 28 25 / 0.96);
+  --card-glass-blur: 0px;
+  --glass-bg-strong: rgb(22 28 25 / 0.88);
   --glass-border: rgb(255 255 255 / 0.10);
   --glass-edge: rgb(255 255 255 / 0.22);
   --glass-shadow: 0 10px 30px rgb(0 0 0 / 0.45), 0 2px 6px rgb(0 0 0 / 0.35);
-  --glass-sheen: linear-gradient(150deg, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0) 45%);
-  --lens-bg: linear-gradient(180deg, rgb(255 255 255 / 0.22), rgb(255 255 255 / 0.07));
+  --glass-sheen: linear-gradient(150deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 40%);
+  --lens-bg: linear-gradient(180deg, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0.04));
   --lens-shadow: 0 3px 10px rgb(0 0 0 / 0.45);
   --lens-shadow-pressed: 0 10px 26px rgb(0 0 0 / 0.55);
-  --ambient-a: rgb(111 166 140 / 0.22);
-  --ambient-b: rgb(139 167 187 / 0.14);
+  --ambient-a: rgb(111 166 140 / 0.12);
+  --ambient-b: rgb(139 167 187 / 0.08);
   --ambient-c: rgb(15 19 17 / 1);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --glass-bg: rgb(30 38 34 / 0.50);
-    --glass-bg-strong: rgb(24 31 27 / 0.72);
+    --glass-bg: rgb(26 33 29 / 0.78);--glass-blur: 12px;
+    --card-glass-bg: rgb(22 28 25 / 0.96);
+    --card-glass-blur: 0px;
+    --glass-bg-strong: rgb(22 28 25 / 0.88);
     --glass-border: rgb(255 255 255 / 0.10);
     --glass-edge: rgb(255 255 255 / 0.22);
     --glass-shadow: 0 10px 30px rgb(0 0 0 / 0.45), 0 2px 6px rgb(0 0 0 / 0.35);
-    --glass-sheen: linear-gradient(150deg, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0) 45%);
-    --lens-bg: linear-gradient(180deg, rgb(255 255 255 / 0.22), rgb(255 255 255 / 0.07));
+    --glass-sheen: linear-gradient(150deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 40%);
+    --lens-bg: linear-gradient(180deg, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0.04));
     --lens-shadow: 0 3px 10px rgb(0 0 0 / 0.45);
     --lens-shadow-pressed: 0 10px 26px rgb(0 0 0 / 0.55);
-    --ambient-a: rgb(111 166 140 / 0.22);
-    --ambient-b: rgb(139 167 187 / 0.14);
+    --ambient-a: rgb(111 166 140 / 0.12);
+    --ambient-b: rgb(139 167 187 / 0.08);
     --ambient-c: rgb(15 19 17 / 1);
   }
 }
@@ -148,11 +155,23 @@ body::before {
     inset 0 1px 0 var(--glass-edge),
     inset 0 -1px 0 rgb(0 0 0 / 0.06),
     inset 0 0 18px rgb(255 255 255 / 0.08);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
 }
 .glass-strong {
   background: var(--glass-sheen), var(--glass-bg-strong);
+}
+
+/* Content cards: much closer to solid than bars, so text stays crisp
+   (fully opaque with no blur in dark mode). */
+.glass-card {
+  background: var(--glass-sheen), var(--card-glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-edge);
+  -webkit-backdrop-filter: blur(var(--card-glass-blur)) saturate(160%);
+  backdrop-filter: blur(var(--card-glass-blur)) saturate(160%);
 }
 
 /* The draggable "lens" under the active tab: thick clear glass with a bright
@@ -171,8 +190,26 @@ body::before {
     inset 3px 0 4px rgb(80 200 255 / 0.40),
     inset -3px 0 4px rgb(255 120 190 / 0.40),
     inset 0 0 16px rgb(255 255 255 / 0.30);
-  -webkit-backdrop-filter: blur(1.5px) saturate(240%) brightness(1.1) contrast(1.05);
-  backdrop-filter: blur(1.5px) saturate(240%) brightness(1.1) contrast(1.05);
+  -webkit-backdrop-filter: saturate(200%) brightness(1.08);
+  backdrop-filter: saturate(200%) brightness(1.08);
+}
+:root[data-theme="dark"] .glass-lens {
+  background: var(--lens-bg);
+  box-shadow:
+    var(--lens-shadow),
+    inset 0 1.5px 1px var(--glass-edge),
+    inset 2px 0 3px rgb(80 200 255 / 0.18),
+    inset -2px 0 3px rgb(255 120 190 / 0.18);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .glass-lens {
+    background: var(--lens-bg);
+    box-shadow:
+      var(--lens-shadow),
+      inset 0 1.5px 1px var(--glass-edge),
+      inset 2px 0 3px rgb(80 200 255 / 0.18),
+      inset -2px 0 3px rgb(255 120 190 / 0.18);
+  }
 }
 .glass-lens-pressed {
   box-shadow:
@@ -186,7 +223,8 @@ body::before {
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass,
-  .glass-strong {
+  .glass-strong,
+  .glass-card {
     background: var(--card);
   }
 }
@@ -199,8 +237,11 @@ body::before {
     backdrop-filter: none;
   }
   .glass,
-  .glass-strong {
+  .glass-strong,
+  .glass-card {
     background: var(--card);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 
