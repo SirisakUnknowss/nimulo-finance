@@ -109,14 +109,15 @@ export function MobileNav() {
               key={item.href}
               href={item.href}
               draggable={false}
+              aria-label={item.label}
               className={cn(
-                "relative z-10 flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-[color,opacity] duration-200",
+                "relative z-10 flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium max-[359px]:py-3 transition-[color,opacity] duration-200",
                 i === shownIndex ? "text-accent" : "text-muted-foreground",
                 underLens && "opacity-0",
               )}
             >
-              <Icon className="h-5 w-5" />
-              {item.label}
+              <Icon className="h-5 w-5 max-[359px]:h-6 max-[359px]:w-6" />
+              <span className="max-[359px]:hidden">{item.label}</span>
             </Link>
           );
         })}
@@ -140,9 +141,9 @@ export function MobileNav() {
               {items.map((item, i) => {
                 const Icon = item.icon;
                 return (
-                  <div key={item.href} className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium">
-                    <Icon className={cn("h-5 w-5", i !== shownIndex && "opacity-70")} />
-                    {item.label}
+                  <div key={item.href} className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium max-[359px]:py-3">
+                    <Icon className={cn("h-5 w-5 max-[359px]:h-6 max-[359px]:w-6", i !== shownIndex && "opacity-70")} />
+                    <span className="max-[359px]:hidden">{item.label}</span>
                   </div>
                 );
               })}
