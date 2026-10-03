@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "nimulo.",
+    "slug": "nimulo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "nimulo",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "app.nimulo.finance",
+      "supportsTablet": false,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "app.nimulo.finance",
+      "adaptiveIcon": {
+        "backgroundColor": "#467A64",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#f7f8f6",
+          "dark": {
+            "backgroundColor": "#0f1311"
+          },
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 96
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "fad9e2b6-b97d-44d6-94b6-ba8064eb5693"
+      }
+    },
+    "owner": "unknowss"
+  }
+}

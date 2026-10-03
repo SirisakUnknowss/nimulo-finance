@@ -3,6 +3,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { buildDemoData, buildEmptyDemoData, type DemoData } from "./seed";
 import { uid } from "@/lib/utils";
+import { storage } from "./storage";
 import type {
   Account,
   Budget,
@@ -20,10 +21,9 @@ import type {
 
 const STORAGE_KEY = "mono-finance-demo-v1";
 
-function loadInitial(): DemoData {
-  if (typeof window === "undefined") return buildEmptyDemoData();
+async function loadInitial(): Promise<DemoData> {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = await storage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as DemoData;
       // Earlier versions auto-loaded mock seed data; discard it so those
@@ -32,7 +32,7 @@ function loadInitial(): DemoData {
       if (!isOldSeed) return parsed;
     }
   } catch {
-    // ignore corrupt storage, fall through to fresh seed
+    // ignore corrupt storage, fall through to a fresh empty state
   }
   return buildEmptyDemoData();
 }
@@ -82,18 +82,20 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration from localStorage after mount
-    setData(loadInitial());
-    setHydrated(true);
+    let cancelled = false;
+    loadInitial().then((loaded) => {
+      if (cancelled) return;
+      setData(loaded);
+      setHydrated(true);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
     if (!hydrated) return;
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch {
-      // localStorage may be unavailable (private mode); ignore silently
-    }
+    void storage.setItem(STORAGE_KEY, JSON.stringify(data));
   }, [data, hydrated]);
 
   const resetDemoData = useCallback(() => setData(buildDemoData()), []);
