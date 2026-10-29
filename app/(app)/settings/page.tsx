@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/misc";
 import { useFinanceData } from "@/lib/hooks/use-finance-data";
 import { downloadCsv, transactionsToCsv } from "@/lib/csv";
 import { useTheme } from "@/components/theme-provider";
-import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 export default function SettingsPage() {
   const finance = useFinanceData();
@@ -16,7 +15,6 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const [displayName, setDisplayName] = useState(data.profile.displayName);
   const [newCategory, setNewCategory] = useState("");
-  const supabaseConfigured = isSupabaseConfigured();
 
   function handleSaveProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -35,16 +33,12 @@ export default function SettingsPage() {
   return (
     <div className="max-w-3xl space-y-6">
       <Card>
-        <CardHeader><CardTitle>สถานะการเชื่อมต่อ</CardTitle></CardHeader>
+        <CardHeader><CardTitle>การจัดเก็บข้อมูล</CardTitle></CardHeader>
         <CardContent className="pt-2">
-          <Badge variant={supabaseConfigured ? "success" : "outline"}>
-            {supabaseConfigured ? "เชื่อมต่อ Supabase แล้ว" : "โหมดสาธิต (Demo Mode) — ข้อมูลจัดเก็บในเบราว์เซอร์นี้เท่านั้น"}
-          </Badge>
-          {!supabaseConfigured && (
-            <p className="mt-2 text-sm text-muted-foreground">
-              ตั้งค่า NEXT_PUBLIC_SUPABASE_URL และ NEXT_PUBLIC_SUPABASE_ANON_KEY ใน .env.local เพื่อเชื่อมต่อฐานข้อมูลจริง ดูรายละเอียดใน README.md
-            </p>
-          )}
+          <Badge variant="outline">เก็บในเบราว์เซอร์นี้เท่านั้น</Badge>
+          <p className="mt-2 text-sm text-muted-foreground">
+            ข้อมูลของคุณไม่ถูกส่งออกไปที่ใด และไม่ซิงก์ข้ามเครื่องหรือข้ามเบราว์เซอร์ หากล้างข้อมูลเบราว์เซอร์ ข้อมูลในแอปจะหายไปด้วย แนะนำให้ส่งออกเป็น CSV เก็บไว้เป็นระยะ
+          </p>
         </CardContent>
       </Card>
 
@@ -150,7 +144,7 @@ export default function SettingsPage() {
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">
-            nimulo ไม่เก็บข้อมูลรับรองบัญชีธนาคารจริง และไม่เชื่อมต่อกับสถาบันการเงินใดๆ ข้อมูลในโหมดสาธิตถูกจัดเก็บในเบราว์เซอร์ของคุณเท่านั้น
+            nimulo ไม่เก็บข้อมูลรับรองบัญชีธนาคารจริง และไม่เชื่อมต่อกับสถาบันการเงินใดๆ ข้อมูลทั้งหมดถูกจัดเก็บในเบราว์เซอร์ของคุณเท่านั้น
           </p>
         </CardContent>
       </Card>

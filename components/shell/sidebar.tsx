@@ -37,7 +37,7 @@ export function Sidebar() {
         })}
       </nav>
       <div className="border-t border-border p-4 text-xs text-muted-foreground">
-        โหมดสาธิต · ข้อมูลจำลองในเบราว์เซอร์
+        ข้อมูลเก็บในเบราว์เซอร์นี้เท่านั้น
       </div>
     </aside>
   );
