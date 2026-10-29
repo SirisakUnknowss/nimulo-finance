@@ -20,9 +20,13 @@ const PALETTE = ["#467A64", "#6FA88A", "#C97B4A", "#5A7FB0", "#A0699E", "#C9A24A
 const STALE_PRICE_THRESHOLD_MS = Date.now() - 30 * 24 * 60 * 60 * 1000;
 
 export default function InvestmentsPage() {
-  const { portfoliosWithMetrics, addHolding, addTrade, accountsWithBalances, data } = useFinanceData();
+  const { portfoliosWithMetrics, addPortfolio, addHolding, addTrade, accountsWithBalances, data } = useFinanceData();
   const [tradeOpen, setTradeOpen] = useState<string | null>(null);
   const [holdingOpen, setHoldingOpen] = useState<string | null>(null);
+  const [portfolioOpen, setPortfolioOpen] = useState(false);
+
+  const [portfolioName, setPortfolioName] = useState("");
+  const [portfolioCashAccountId, setPortfolioCashAccountId] = useState("");
 
   const [tradeType, setTradeType] = useState<TradeType>("buy");
   const [tradeQty, setTradeQty] = useState("");
@@ -63,6 +67,18 @@ export default function InvestmentsPage() {
     setHoldingOpen(null);
   }
 
+  function handleAddPortfolio(e: React.FormEvent) {
+    e.preventDefault();
+    if (!portfolioName.trim()) return;
+    addPortfolio({
+      name: portfolioName.trim(),
+      currency: data.profile.baseCurrency,
+      cashAccountId: portfolioCashAccountId || null,
+    });
+    setPortfolioName(""); setPortfolioCashAccountId("");
+    setPortfolioOpen(false);
+  }
+
   function handleTrade(e: React.FormEvent) {
     e.preventDefault();
     if (!tradeOpen) return;
@@ -79,12 +95,53 @@ export default function InvestmentsPage() {
     setTradeOpen(null);
   }
 
+  const portfolioDialog = (
+    <Dialog open={portfolioOpen} onOpenChange={setPortfolioOpen}>
+      <DialogContent>
+        <DialogHeader><DialogTitle>เพิ่มพอร์ตการลงทุน</DialogTitle></DialogHeader>
+        <form onSubmit={handleAddPortfolio} className="space-y-3">
+          <div>
+            <Label>ชื่อพอร์ต</Label>
+            <Input placeholder="เช่น พอร์ตหุ้นไทย, กองทุนลดหย่อนภาษี" value={portfolioName} onChange={(e) => setPortfolioName(e.target.value)} required />
+          </div>
+          <div>
+            <Label>บัญชีเงินสดสำหรับลงทุน (ไม่บังคับ)</Label>
+            <Select value={portfolioCashAccountId} onChange={(e) => setPortfolioCashAccountId(e.target.value)}>
+              <option value="">ไม่ผูกบัญชี</option>
+              {investCashAccounts.map(({ account }) => <option key={account.id} value={account.id}>{account.name}</option>)}
+            </Select>
+            {investCashAccounts.length === 0 && (
+              <p className="mt-1 text-xs text-muted-foreground">ยังไม่มีบัญชีประเภท &quot;เงินสดในพอร์ตลงทุน&quot; เพิ่มได้ที่หน้าบัญชี</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setPortfolioOpen(false)}>ยกเลิก</Button>
+            <Button type="submit">บันทึก</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+
   if (portfoliosWithMetrics.length === 0) {
-    return <EmptyState title="ยังไม่มีการลงทุนของฉัน" description="เพิ่มพอร์ตการลงทุนเพื่อเริ่มติดตามหุ้น กองทุน และสินทรัพย์อื่นๆ" />;
+    return (
+      <>
+        <EmptyState
+          title="ยังไม่มีการลงทุนของฉัน"
+          description="เพิ่มพอร์ตการลงทุนเพื่อเริ่มติดตามหุ้น กองทุน และสินทรัพย์อื่นๆ"
+          action={<Button size="sm" className="mt-2" onClick={() => setPortfolioOpen(true)}><Plus className="h-4 w-4" />เพิ่มพอร์ต</Button>}
+        />
+        {portfolioDialog}
+      </>
+    );
   }
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-end">
+        <Button size="sm" variant="outline" onClick={() => setPortfolioOpen(true)}><Plus className="h-4 w-4" />เพิ่มพอร์ต</Button>
+      </div>
+      {portfolioDialog}
       {portfoliosWithMetrics.map(({ portfolio, holdings, metrics, snapshots }) => {
         const allocationData = holdings.map((h, i) => ({
           name: h.symbol,
