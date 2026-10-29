@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select } from "@/components/ui/input";
@@ -8,13 +8,34 @@ import { Badge } from "@/components/ui/misc";
 import { useFinanceData } from "@/lib/hooks/use-finance-data";
 import { downloadCsv, transactionsToCsv } from "@/lib/csv";
 import { useTheme } from "@/components/theme-provider";
+import { BackupError, downloadBackup, parseBackup, summarizeBackup } from "@/lib/backup";
 
 export default function SettingsPage() {
   const finance = useFinanceData();
-  const { data, updateProfile, addCategory, categoryById, accountById } = finance;
+  const { data, updateProfile, addCategory, replaceAllData, categoryById, accountById } = finance;
   const { theme, setTheme } = useTheme();
   const [displayName, setDisplayName] = useState(data.profile.displayName);
   const [newCategory, setNewCategory] = useState("");
+  const [restoreMessage, setRestoreMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  const restoreInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleRestoreFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow picking the same file again
+    if (!file) return;
+    try {
+      const restored = parseBackup(await file.text());
+      const ok = confirm(
+        `กู้คืนข้อมูลจากไฟล์นี้หรือไม่?\n\n${summarizeBackup(restored)}\n\nข้อมูลทั้งหมดที่อยู่ในเบราว์เซอร์นี้ตอนนี้จะถูกแทนที่`,
+      );
+      if (!ok) return;
+      replaceAllData(restored);
+      setDisplayName(restored.profile.displayName);
+      setRestoreMessage({ ok: true, text: "กู้คืนข้อมูลเรียบร้อยแล้ว" });
+    } catch (err) {
+      setRestoreMessage({ ok: false, text: err instanceof BackupError ? err.message : "อ่านไฟล์ไม่สำเร็จ" });
+    }
+  }
 
   function handleSaveProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -37,7 +58,7 @@ export default function SettingsPage() {
         <CardContent className="pt-2">
           <Badge variant="outline">เก็บในเบราว์เซอร์นี้เท่านั้น</Badge>
           <p className="mt-2 text-sm text-muted-foreground">
-            ข้อมูลของคุณไม่ถูกส่งออกไปที่ใด และไม่ซิงก์ข้ามเครื่องหรือข้ามเบราว์เซอร์ หากล้างข้อมูลเบราว์เซอร์ ข้อมูลในแอปจะหายไปด้วย แนะนำให้ส่งออกเป็น CSV เก็บไว้เป็นระยะ
+            ข้อมูลของคุณไม่ถูกส่งออกไปที่ใด และไม่ซิงก์ข้ามเครื่องหรือข้ามเบราว์เซอร์ หากล้างข้อมูลเบราว์เซอร์ ข้อมูลในแอปจะหายไปด้วย แนะนำให้กด &quot;สำรองข้อมูลทั้งหมด&quot; ด้านล่างเก็บไว้เป็นระยะ
           </p>
         </CardContent>
       </Card>
@@ -106,7 +127,20 @@ export default function SettingsPage() {
       <Card>
         <CardHeader><CardTitle>ข้อมูลและความเป็นส่วนตัว</CardTitle></CardHeader>
         <CardContent className="pt-2 space-y-3">
-          <Button variant="outline" size="sm" onClick={handleExportAll}>ส่งออกข้อมูลทั้งหมด (CSV)</Button>
+          <div className="space-y-2">
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" onClick={() => downloadBackup(data)}>สำรองข้อมูลทั้งหมด</Button>
+              <Button variant="outline" size="sm" onClick={() => restoreInputRef.current?.click()}>กู้คืนจากไฟล์สำรอง</Button>
+              <input ref={restoreInputRef} type="file" accept=".json,application/json" className="hidden" onChange={handleRestoreFile} />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              ไฟล์สำรองเก็บทุกอย่าง (บัญชี รายการเงิน งบประมาณ เป้าหมาย หนี้สิน การลงทุน) ใช้ย้ายไปเครื่องอื่นหรือกู้คืนหลังล้างข้อมูลเบราว์เซอร์ได้
+            </p>
+            {restoreMessage && (
+              <p className={`text-xs ${restoreMessage.ok ? "text-success" : "text-danger"}`}>{restoreMessage.text}</p>
+            )}
+          </div>
+          <Button variant="outline" size="sm" onClick={handleExportAll}>ส่งออกรายการเงิน (CSV)</Button>
           <div>
             <Button
               variant="danger"

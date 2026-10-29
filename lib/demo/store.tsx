@@ -44,6 +44,8 @@ interface DemoStoreApi {
   hydrated: boolean;
   resetDemoData: () => void;
   startEmptyData: () => void;
+  /** Replaces everything in this browser, e.g. when restoring a backup file. */
+  replaceAllData: (data: DemoData) => void;
   addAccount: (a: Omit<Account, "id" | "userId" | "createdAt" | "archived">) => Account;
   updateAccount: (id: string, patch: Partial<Account>) => void;
   archiveAccount: (id: string) => void;
@@ -100,6 +102,7 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
 
   const resetDemoData = useCallback(() => setData(buildDemoData()), []);
   const startEmptyData = useCallback(() => setData(buildEmptyDemoData()), []);
+  const replaceAllData = useCallback((next: DemoData) => setData(next), []);
 
   const addAccount: DemoStoreApi["addAccount"] = useCallback((a) => {
     const account: Account = { ...a, id: uid("acc"), userId: "demo-user", archived: false, createdAt: new Date().toISOString() };
@@ -307,6 +310,7 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
       hydrated,
       resetDemoData,
       startEmptyData,
+      replaceAllData,
       addAccount,
       updateAccount,
       archiveAccount,
@@ -338,6 +342,7 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
       hydrated,
       resetDemoData,
       startEmptyData,
+      replaceAllData,
       addAccount,
       updateAccount,
       archiveAccount,

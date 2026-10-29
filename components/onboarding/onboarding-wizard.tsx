@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select } from "@/components/ui/input";
@@ -199,6 +200,10 @@ export function OnboardingWizard({ onFinish }: { onFinish: () => void }) {
             <button type="button" onClick={onFinish} className="text-xs text-muted-foreground underline underline-offset-2">
               ข้ามและดูภาพรวมแบบว่างเปล่า
             </button>
+            <p className="text-xs text-muted-foreground">
+              มีไฟล์สำรองข้อมูลจากเครื่องอื่น?{" "}
+              <Link href="/settings" className="text-accent underline underline-offset-2">กู้คืนข้อมูล</Link>
+            </p>
           </CardContent>
         </Card>
       )}
