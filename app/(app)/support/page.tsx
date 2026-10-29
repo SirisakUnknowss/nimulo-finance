@@ -3,6 +3,9 @@ import { buttonVariants } from "@/components/ui/button";
 import { Coffee, Download, Landmark, ScanLine, Wallet } from "lucide-react";
 import { assetPath } from "@/lib/utils";
 
+// Each artwork matches the app theme; only the one for the active theme is shown.
+const THEMES = ["light", "dark"] as const;
+
 const STEPS = [
   { icon: Landmark, label: "เปิดแอปธนาคาร" },
   { icon: ScanLine, label: "สแกน QR" },
@@ -23,24 +26,32 @@ export default function SupportPage() {
       </div>
 
       <Card className="overflow-hidden p-0">
-        {/* eslint-disable-next-line @next/next/no-img-element -- static export, no next/image optimization */}
-        <img
-          src={assetPath("/support/coffee-qr.webp")}
-          alt="QR Code PromptPay สำหรับเลี้ยงกาแฟผู้พัฒนา nimulo"
-          width={1122}
-          height={1402}
-          className="block h-auto w-full"
-        />
+        {THEMES.map((theme) => (
+          <div key={theme} className={`theme-${theme}-only`}>
+            {/* eslint-disable-next-line @next/next/no-img-element -- static export, no next/image optimization */}
+            <img
+              src={assetPath(`/support/coffee-qr-${theme}.webp`)}
+              alt="QR Code PromptPay สำหรับเลี้ยงกาแฟผู้พัฒนา nimulo"
+              width={1122}
+              height={1402}
+              className="block h-auto w-full"
+            />
+          </div>
+        ))}
       </Card>
 
-      <a
-        href={assetPath("/support/coffee-qr.png")}
-        download="nimulo-coffee-qr.png"
-        className={buttonVariants({ size: "lg", className: "w-full rounded-full" })}
-      >
-        <Download className="h-4 w-4" />
-        บันทึกรูป QR
-      </a>
+      {THEMES.map((theme) => (
+        <div key={theme} className={`theme-${theme}-only`}>
+          <a
+            href={assetPath(`/support/coffee-qr-${theme}.png`)}
+            download="nimulo-coffee-qr.png"
+            className={buttonVariants({ size: "lg", className: "w-full rounded-full" })}
+          >
+            <Download className="h-4 w-4" />
+            บันทึกรูป QR
+          </a>
+        </div>
+      ))}
       <p className="-mt-3 text-center text-xs text-muted-foreground">
         สแกนจากมือถือเครื่องเดียวกันไม่ได้? บันทึกรูปแล้วเลือก &quot;สแกนจากรูปภาพ&quot; ในแอปธนาคาร
       </p>
