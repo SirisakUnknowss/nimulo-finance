@@ -5,7 +5,7 @@ import { assetPath } from "@/lib/utils";
 import { Moon, Sun, Monitor, User, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
-import { NAV_ITEMS } from "./nav-items";
+import { EXTRA_PAGES, NAV_ITEMS } from "./nav-items";
 import { QuickAddTransactionDialog } from "@/components/transactions/quick-add-dialog";
 import { useState } from "react";
 
@@ -13,7 +13,7 @@ export function Header() {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const [quickAddOpen, setQuickAddOpen] = useState(false);
-  const current = NAV_ITEMS.find((i) => pathname.startsWith(i.href));
+  const current = [...NAV_ITEMS, ...EXTRA_PAGES].find((i) => pathname.startsWith(i.href));
 
   function cycleTheme() {
     setTheme(theme === "light" ? "dark" : theme === "dark" ? "system" : "light");

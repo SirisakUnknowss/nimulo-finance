@@ -8,6 +8,7 @@ import {
   CreditCard,
   FileBarChart,
   Settings,
+  Coffee,
   type LucideIcon,
 } from "lucide-react";
 
@@ -27,4 +28,9 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/debts", label: "หนี้สิน", icon: CreditCard },
   { href: "/reports", label: "รายงาน", icon: FileBarChart },
   { href: "/settings", label: "ตั้งค่า", icon: Settings },
+];
+
+/** Pages reachable from links rather than the main nav; listed so the header can title them. */
+export const EXTRA_PAGES: NavItem[] = [
+  { href: "/support", label: "เลี้ยงกาแฟ dev", icon: Coffee },
 ];

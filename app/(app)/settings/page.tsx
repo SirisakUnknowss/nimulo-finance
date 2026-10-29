@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
+import { ChevronRight, Coffee } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select } from "@/components/ui/input";
@@ -53,6 +55,20 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-3xl space-y-6">
+      <Link
+        href="/support"
+        className="glass flex items-center gap-3 rounded-2xl p-4 transition-colors hover:bg-accent-soft/60"
+      >
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent">
+          <Coffee className="h-5 w-5" />
+        </span>
+        <span className="flex-1">
+          <span className="block text-sm font-semibold">เลี้ยงกาแฟ dev สักแก้ว ☕</span>
+          <span className="block text-xs text-muted-foreground">nimulo ใช้ฟรีทุกฟีเจอร์ ร่วมสนับสนุนให้พัฒนาต่อได้</span>
+        </span>
+        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+      </Link>
+
       <Card>
         <CardHeader><CardTitle>การจัดเก็บข้อมูล</CardTitle></CardHeader>
         <CardContent className="pt-2">

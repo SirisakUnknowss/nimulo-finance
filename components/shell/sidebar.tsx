@@ -4,6 +4,7 @@ import Link from "next/link";
 import { assetPath } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Coffee } from "lucide-react";
 import { NAV_ITEMS } from "./nav-items";
 
 export function Sidebar() {
@@ -36,8 +37,18 @@ export function Sidebar() {
           );
         })}
       </nav>
-      <div className="border-t border-border p-4 text-xs text-muted-foreground">
-        ข้อมูลเก็บในเบราว์เซอร์นี้เท่านั้น
+      <div className="space-y-3 border-t border-border p-4 text-xs text-muted-foreground">
+        <Link
+          href="/support"
+          className={cn(
+            "flex items-center gap-2 rounded-lg px-3 py-2 font-medium transition-colors",
+            pathname.startsWith("/support") ? "bg-accent-soft text-accent" : "hover:bg-accent-soft/60 hover:text-foreground",
+          )}
+        >
+          <Coffee className="h-4 w-4" />
+          เลี้ยงกาแฟ dev
+        </Link>
+        <p>ข้อมูลเก็บในเบราว์เซอร์นี้เท่านั้น</p>
       </div>
     </aside>
   );
