@@ -11,7 +11,7 @@ import { useTheme } from "@/components/theme-provider";
 
 export default function SettingsPage() {
   const finance = useFinanceData();
-  const { data, updateProfile, addCategory, resetDemoData, startEmptyData, categoryById, accountById } = finance;
+  const { data, updateProfile, addCategory, categoryById, accountById } = finance;
   const { theme, setTheme } = useTheme();
   const [displayName, setDisplayName] = useState(data.profile.displayName);
   const [newCategory, setNewCategory] = useState("");
@@ -27,7 +27,7 @@ export default function SettingsPage() {
       (id) => categoryById.get(id ?? "")?.name ?? "",
       (id) => accountById.get(id)?.name ?? id,
     );
-    downloadCsv(`mono-finance-export-${new Date().toISOString().slice(0, 10)}.csv`, csv);
+    downloadCsv(`nimulo-export-${new Date().toISOString().slice(0, 10)}.csv`, csv);
   }
 
   return (
@@ -107,28 +107,6 @@ export default function SettingsPage() {
         <CardHeader><CardTitle>ข้อมูลและความเป็นส่วนตัว</CardTitle></CardHeader>
         <CardContent className="pt-2 space-y-3">
           <Button variant="outline" size="sm" onClick={handleExportAll}>ส่งออกข้อมูลทั้งหมด (CSV)</Button>
-          <div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => confirm("โหลดข้อมูลตัวอย่างหรือไม่? ข้อมูลปัจจุบันจะถูกแทนที่") && resetDemoData()}
-            >
-              โหลดข้อมูลตัวอย่าง
-            </Button>
-          </div>
-          <div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                confirm(
-                  "เริ่มต้นใหม่แบบไม่มีข้อมูลหรือไม่? (บัญชี รายการ งบประมาณ ฯลฯ จะถูกล้างทั้งหมด)",
-                ) && startEmptyData()
-              }
-            >
-              เริ่มต้นใหม่แบบไม่มีข้อมูล
-            </Button>
-          </div>
           <div>
             <Button
               variant="danger"

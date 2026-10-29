@@ -36,13 +36,16 @@ export default function InvestmentsPage() {
   const [avgCost, setAvgCost] = useState("");
   const [currency, setCurrency] = useState("THB");
   const [latestPrice, setLatestPrice] = useState("");
+  const [fxRate, setFxRate] = useState("");
 
   const investCashAccounts = accountsWithBalances.filter((a) => a.account.type === "investment_cash");
   const staleThreshold = STALE_PRICE_THRESHOLD_MS;
 
   function handleAddHolding(e: React.FormEvent) {
     e.preventDefault();
+    const isForeign = currency !== "THB";
     if (!holdingOpen || !symbol || !quantity || !avgCost || !latestPrice) return;
+    if (isForeign && !(Number(fxRate) > 0)) return;
     addHolding({
       portfolioId: holdingOpen,
       symbol,
@@ -53,10 +56,10 @@ export default function InvestmentsPage() {
       currency,
       latestPrice: Number(latestPrice),
       latestPriceDate: new Date().toISOString().slice(0, 10),
-      fxRateToBase: currency !== "THB" ? 36 : null,
-      fxRateDate: currency !== "THB" ? new Date().toISOString().slice(0, 10) : null,
+      fxRateToBase: isForeign ? Number(fxRate) : null,
+      fxRateDate: isForeign ? new Date().toISOString().slice(0, 10) : null,
     });
-    setSymbol(""); setHName(""); setQuantity(""); setAvgCost(""); setLatestPrice("");
+    setSymbol(""); setHName(""); setQuantity(""); setAvgCost(""); setLatestPrice(""); setFxRate("");
     setHoldingOpen(null);
   }
 
@@ -198,7 +201,12 @@ export default function InvestmentsPage() {
               <div><Label>ต้นทุนเฉลี่ย</Label><Input type="number" value={avgCost} onChange={(e) => setAvgCost(e.target.value)} required /></div>
               <div><Label>ราคาล่าสุด</Label><Input type="number" value={latestPrice} onChange={(e) => setLatestPrice(e.target.value)} required /></div>
             </div>
-            {currency !== "THB" && <p className="text-xs text-muted-foreground">ใช้อัตราแลกเปลี่ยนตัวอย่าง 36 บาท/USD กรุณาปรับในหน้าตั้งค่าหากต้องการความแม่นยำ</p>}
+            {currency !== "THB" && (
+              <div>
+                <Label>อัตราแลกเปลี่ยน (บาท ต่อ 1 {currency})</Label>
+                <Input type="number" step="any" min="0" value={fxRate} onChange={(e) => setFxRate(e.target.value)} required />
+              </div>
+            )}
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setHoldingOpen(null)}>ยกเลิก</Button>
               <Button type="submit">บันทึก</Button>
