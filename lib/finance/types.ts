@@ -77,6 +77,8 @@ export interface Transaction {
   billPaymentId?: string | null;
   /** Set on a contra entry: the transaction this row reverses. */
   reversalOfTransactionId?: string | null;
+  /** Identifies the source row of an imported transaction, so re-importing adds nothing twice. */
+  importKey?: string | null;
   createdAt: string;
 }
 

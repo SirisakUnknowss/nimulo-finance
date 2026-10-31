@@ -103,6 +103,7 @@ beforeAll(async () => {
   await db.exec(migration("0002_rls.sql"));
   await db.exec(migration("0003_bills.sql"));
   await db.exec(migration("0004_loan_installments.sql"));
+  await db.exec(migration("0005_import_key.sql"));
   await db.exec(`
     grant select, insert, update, delete on all tables in schema public to authenticated;
     insert into auth.users (id) values ('${ALICE}'), ('${BOB}');
@@ -292,6 +293,15 @@ describe("loan installments", () => {
   it("is optional and refuses a negative count", async () => {
     await sql(`update loan_accounts set installments_planned = 48 where id = $1`, [f.loan]);
     await expect(sql(`update loan_accounts set installments_planned = -1 where id = $1`, [f.loan])).rejects.toThrow(/loan_accounts_installments_planned_check/);
+  });
+});
+
+describe("imported transactions", () => {
+  it("refuses the same source row twice for one user", async () => {
+    const insert = () =>
+      sql(`insert into transactions (user_id, type, amount, date, account_id, category_id, import_key) values ($1,'expense',1,'2026-11-01',$2,$3,'wallet:a')`, [ALICE, f.bankA, f.food]);
+    await insert();
+    await expect(insert()).rejects.toThrow(/unique/);
   });
 });
 

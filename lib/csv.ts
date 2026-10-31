@@ -45,38 +45,38 @@ export interface ParsedCsvRow {
   note: string;
 }
 
-/** Simple CSV parser (handles quoted fields) for the import preview flow. */
+/** CSV parser for the import flows. Quoted fields may contain commas, quotes and newlines. */
 export function parseCsv(text: string): { headers: string[]; rows: string[][] } {
-  const lines = text.replace(/^﻿/, "").split(/\r?\n/).filter((l) => l.length > 0);
-  const parseLine = (line: string): string[] => {
-    const result: string[] = [];
-    let cur = "";
-    let inQuotes = false;
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (inQuotes) {
-        if (ch === '"') {
-          if (line[i + 1] === '"') {
-            cur += '"';
-            i++;
-          } else {
-            inQuotes = false;
-          }
-        } else {
-          cur += ch;
-        }
-      } else if (ch === '"') {
-        inQuotes = true;
-      } else if (ch === ",") {
-        result.push(cur);
-        cur = "";
-      } else {
-        cur += ch;
-      }
-    }
-    result.push(cur);
-    return result;
+  const records: string[][] = [];
+  let record: string[] = [];
+  let cur = "";
+  let inQuotes = false;
+  const source = text.replace(/^\ufeff/, "");
+
+  const endRecord = () => {
+    record.push(cur);
+    cur = "";
+    if (record.length > 1 || record[0] !== "") records.push(record);
+    record = [];
   };
-  const [headerLine, ...rest] = lines;
-  return { headers: parseLine(headerLine), rows: rest.map(parseLine) };
+
+  for (let i = 0; i < source.length; i++) {
+    const ch = source[i];
+    if (inQuotes) {
+      if (ch !== '"') cur += ch;
+      else if (source[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else inQuotes = false;
+    } else if (ch === '"') inQuotes = true;
+    else if (ch === ",") {
+      record.push(cur);
+      cur = "";
+    } else if (ch === "\n") endRecord();
+    else if (ch !== "\r") cur += ch;
+  }
+  if (cur !== "" || record.length > 0) endRecord();
+
+  const [headers = [], ...rows] = records;
+  return { headers, rows };
 }

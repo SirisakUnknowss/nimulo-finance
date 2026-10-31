@@ -5,6 +5,7 @@ import { buildDemoData, buildEmptyDemoData, type DemoData } from "./seed";
 import { uid } from "@/lib/utils";
 import { storage } from "./storage";
 import * as bills from "@/lib/finance/bills";
+import { applyImportPlan, type WalletImportPlan } from "@/lib/import/wallet-story";
 import type {
   Account,
   Budget,
@@ -86,6 +87,7 @@ interface DemoStoreApi {
   recordBillPayment: (input: bills.RecordPaymentInput) => void;
   reverseBillPayment: (id: string, reason: string) => void;
   setLoanInstallments: (loanId: string, remaining: number | null) => void;
+  applyWalletImport: (plan: WalletImportPlan) => void;
 }
 
 const DemoStoreContext = createContext<DemoStoreApi | null>(null);
@@ -387,6 +389,10 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
     [applyBill],
   );
 
+  const applyWalletImport: DemoStoreApi["applyWalletImport"] = useCallback((plan) => {
+    setData((d) => applyImportPlan(d, plan));
+  }, []);
+
   const value = useMemo<DemoStoreApi>(
     () => ({
       data,
@@ -432,6 +438,7 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
       recordBillPayment,
       reverseBillPayment,
       setLoanInstallments,
+      applyWalletImport,
     }),
     [
       data,
@@ -476,6 +483,7 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
       recordBillPayment,
       reverseBillPayment,
       setLoanInstallments,
+      applyWalletImport,
     ],
   );
 

@@ -12,6 +12,7 @@ import { formatTHB } from "@/lib/utils";
 import { transactionsToCsv, downloadCsv } from "@/lib/csv";
 import { QuickAddTransactionDialog } from "@/components/transactions/quick-add-dialog";
 import { ImportTransactionsDialog } from "@/components/transactions/import-dialog";
+import { WalletImportDialog } from "@/components/transactions/wallet-import-dialog";
 import type { TransactionType } from "@/lib/finance/types";
 
 const PAGE_SIZE = 15;
@@ -29,6 +30,7 @@ export default function TransactionsPage() {
   const [page, setPage] = useState(1);
   const [addOpen, setAddOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [walletImportOpen, setWalletImportOpen] = useState(false);
 
   const filtered = useMemo(() => {
     let list = [...data.transactions];
@@ -72,6 +74,7 @@ export default function TransactionsPage() {
         <h2 className="text-lg font-semibold" suppressHydrationWarning>รายการทั้งหมด ({filtered.length})</h2>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}><Upload className="h-4 w-4" />นำเข้า CSV</Button>
+          <Button variant="outline" size="sm" onClick={() => setWalletImportOpen(true)}><Upload className="h-4 w-4" />นำเข้าจาก Wallet Story</Button>
           <Button variant="outline" size="sm" onClick={handleExport}><Download className="h-4 w-4" />ส่งออก CSV</Button>
           <Button size="sm" onClick={() => setAddOpen(true)}><Plus className="h-4 w-4" />เพิ่มรายการ</Button>
         </div>
@@ -186,6 +189,7 @@ export default function TransactionsPage() {
 
       <QuickAddTransactionDialog open={addOpen} onOpenChange={setAddOpen} />
       <ImportTransactionsDialog open={importOpen} onOpenChange={setImportOpen} />
+      {walletImportOpen && <WalletImportDialog onClose={() => setWalletImportOpen(false)} />}
     </div>
   );
 }
