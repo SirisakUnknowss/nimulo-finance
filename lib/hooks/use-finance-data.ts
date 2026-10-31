@@ -13,6 +13,7 @@ import {
   computeRemainingPrincipal,
   sumByCategory,
 } from "@/lib/finance/calculations";
+import { computeRemainingInstallments } from "@/lib/finance/bill-calculations";
 import type { Account } from "@/lib/finance/types";
 
 /**
@@ -79,8 +80,9 @@ export function useFinanceData() {
         remainingPrincipal: computeRemainingPrincipal(loan, data.loanPayments),
         interestPaidTotal: computeLoanInterestPaid(loan.id, data.loanPayments),
         payments: data.loanPayments.filter((p) => p.loanAccountId === loan.id),
+        installmentsRemaining: computeRemainingInstallments(loan, data),
       })),
-    [data.loans, data.loanPayments],
+    [data],
   );
 
   const portfoliosWithMetrics = useMemo(

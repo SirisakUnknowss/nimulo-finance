@@ -6,6 +6,7 @@ import {
   bangkokDate,
   computeAccountCashPlan,
   computeBillsSummary,
+  computeRemainingInstallments,
   deriveBill,
   deriveBills,
   dueDateFor,
@@ -20,6 +21,7 @@ import {
   recordBillPayment,
   reopenBill,
   reverseBillPayment,
+  setLoanInstallments,
   setRuleStatus,
   skipBill,
   updateBill,
@@ -548,5 +550,88 @@ describe("summary", () => {
     expect(row("savings")).toMatchObject({ incoming: 3000, projected: 4000 });
     expect(row("card")).toMatchObject({ balance: 0, outgoing: 1000, projected: 1000 });
     expect(row("port")).toMatchObject({ incoming: 2000, projected: 2000 });
+  });
+});
+
+describe("loan installments", () => {
+  const loanRule = { cashflowKind: "loan_payment" as const, loanAccountId: "loan_car", categoryId: null, defaultAmount: 1000 };
+  const split = { principalAmount: 900, interestAmount: 100 };
+  const remaining = (s: BillState) => computeRemainingInstallments(s.loans[0], s);
+
+  function withCount(count: number, periods = [NOV]) {
+    const start = setLoanInstallments(baseState(), "loan_car", count);
+    return ensureBills(createRule(start, ruleInput(loanRule), NOW), periods, NOW);
+  }
+
+  it("is null until a count is set", () => {
+    expect(remaining(baseState())).toBeNull();
+  });
+
+  it("drops by one when a bill is paid in full", () => {
+    const s = withCount(3);
+    expect(remaining(s)).toBe(3);
+    expect(remaining(pay(s, s.monthlyBills[0], split))).toBe(2);
+  });
+
+  it("counts a bill paid in two parts as one installment, once it is complete", () => {
+    const s = withCount(3);
+    const bill = s.monthlyBills[0];
+    const first = pay(s, bill, { amount: 400, principalAmount: 400, interestAmount: 0 });
+    expect(remaining(first)).toBe(3);
+    expect(remaining(pay(first, bill, { amount: 600, principalAmount: 500, interestAmount: 100 }))).toBe(2);
+  });
+
+  it("gives the installment back when a payment is reversed", () => {
+    const s = withCount(3);
+    const paid = pay(s, s.monthlyBills[0], split);
+    expect(remaining(reverseBillPayment(paid, paid.billPayments[0].id, "x", NOW))).toBe(3);
+  });
+
+  it("does not count a skipped month", () => {
+    const s = withCount(3);
+    expect(remaining(skipBill(s, s.monthlyBills[0].id, "พักชำระ", NOW))).toBe(3);
+  });
+
+  it("counts a payment recorded directly on the debts page", () => {
+    const s = withCount(3);
+    const direct = { id: "lp1", loanAccountId: "loan_car", userId: "demo-user", date: "2026-11-01", principalAmount: 900, interestAmount: 100 };
+    expect(remaining({ ...s, loanPayments: [direct] })).toBe(2);
+  });
+
+  it("stops creating bills once the installments are covered", () => {
+    const s = withCount(2, [NOV, DEC, "2027-01", "2027-02"]);
+    expect(s.monthlyBills.map((b) => b.period)).toEqual([NOV, DEC]);
+  });
+
+  it("uses the earliest months first, whatever order they are asked for", () => {
+    const s = withCount(1, ["2027-02", NOV]);
+    expect(s.monthlyBills.map((b) => b.period)).toEqual([NOV]);
+  });
+
+  it("creates no more after the last installment is paid", () => {
+    const s = withCount(1);
+    const paid = pay(s, s.monthlyBills[0], split);
+    expect(remaining(paid)).toBe(0);
+    expect(ensureBills(paid, [DEC], NOW).monthlyBills).toHaveLength(1);
+  });
+
+  it("keeps generating with no limit when no count is set", () => {
+    const s = ensureBills(createRule(baseState(), ruleInput(loanRule), NOW), [NOV, DEC, "2027-01"], NOW);
+    expect(s.monthlyBills).toHaveLength(3);
+  });
+
+  it("treats an edit as what is left from now, keeping payments already made", () => {
+    const s = withCount(3);
+    const paid = pay(s, s.monthlyBills[0], split);
+    const edited = setLoanInstallments(paid, "loan_car", 10);
+    expect(remaining(edited)).toBe(10);
+    expect(edited.loans[0].installmentsPlanned).toBe(11);
+  });
+
+  it("clears the count, and rejects anything but a whole non-negative number", () => {
+    const s = withCount(3);
+    expect(remaining(setLoanInstallments(s, "loan_car", null))).toBeNull();
+    expect(() => setLoanInstallments(s, "loan_car", -1)).toThrow(BillError);
+    expect(() => setLoanInstallments(s, "loan_car", 1.5)).toThrow(BillError);
   });
 });

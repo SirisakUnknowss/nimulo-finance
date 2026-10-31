@@ -102,6 +102,7 @@ beforeAll(async () => {
   await db.exec(migration("0001_init.sql"));
   await db.exec(migration("0002_rls.sql"));
   await db.exec(migration("0003_bills.sql"));
+  await db.exec(migration("0004_loan_installments.sql"));
   await db.exec(`
     grant select, insert, update, delete on all tables in schema public to authenticated;
     insert into auth.users (id) values ('${ALICE}'), ('${BOB}');
@@ -284,6 +285,13 @@ describe("constraints", () => {
     await sql(`delete from auth.users where id = $1`, [ALICE]);
     expect(await count("bill_payments")).toBe(0);
     await sql(`insert into auth.users (id) values ($1)`, [ALICE]);
+  });
+});
+
+describe("loan installments", () => {
+  it("is optional and refuses a negative count", async () => {
+    await sql(`update loan_accounts set installments_planned = 48 where id = $1`, [f.loan]);
+    await expect(sql(`update loan_accounts set installments_planned = -1 where id = $1`, [f.loan])).rejects.toThrow(/loan_accounts_installments_planned_check/);
   });
 });
 

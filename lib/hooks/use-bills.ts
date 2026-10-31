@@ -31,7 +31,7 @@ export function useBills(period: string) {
     const current = bangkokPeriod();
     const ahead = Array.from({ length: MONTHS_AHEAD }, (_, i) => shiftPeriod(current, i));
     ensureBills([period, ...ahead]);
-  }, [hydrated, period, data.fixedCostRules, ensureBills]);
+  }, [hydrated, period, data.fixedCostRules, data.loans, ensureBills]);
 
   const today = bangkokDate();
 

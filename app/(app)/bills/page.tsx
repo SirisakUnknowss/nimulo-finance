@@ -52,6 +52,7 @@ export default function BillsPage() {
   }, [items, accountFilter, categoryFilter, statusFilter, search]);
 
   const rules = data.fixedCostRules.filter((r) => !r.archived);
+  const installmentsByLoan = new Map(finance.loansWithSummary.map((l) => [l.loan.id, l.installmentsRemaining]));
   const payments = useMemo(
     () => [...data.billPayments].sort((a, b) => b.paidAt.localeCompare(a.paidAt)),
     [data.billPayments],
@@ -236,6 +237,9 @@ export default function BillsPage() {
                       {rule.name}
                       {!rule.isActive && <Badge variant="outline">หยุดชั่วคราว</Badge>}
                       {rule.amountMode === "estimate" && <Badge variant="outline">ยอดประมาณ</Badge>}
+                      {typeof installmentsByLoan.get(rule.loanAccountId ?? "") === "number" && (
+                        <Badge variant="outline">เหลือ {installmentsByLoan.get(rule.loanAccountId ?? "")} งวด</Badge>
+                      )}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {formatTHB(amountForPeriod(rule, period))} · {CASHFLOW_KIND_LABELS[rule.cashflowKind]} · {rule.dueRule === "last_day" ? "วันสุดท้ายของเดือน" : `ทุกวันที่ ${rule.dueDay}`}

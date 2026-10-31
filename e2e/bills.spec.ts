@@ -111,6 +111,38 @@ test("a one-month amount change leaves the rule alone", async ({ page }) => {
   await expect(page.getByTestId("bill-row")).toContainText("฿1,500.00");
 });
 
+test("a loan's remaining installments count down as its bill is paid", async ({ page }) => {
+  await seed(page);
+  await page.goto("/debts");
+  await page.getByRole("button", { name: "เพิ่มสินเชื่อ" }).first().click();
+  const loanDialog = page.getByRole("dialog");
+  await loanDialog.getByPlaceholder("เช่น ผ่อนรถ, สินเชื่อบ้าน, กยศ.").fill("ผ่อนรถ");
+  await loanDialog.locator('input[type="number"]').first().fill("100000");
+  await loanDialog.getByLabel("จำนวนงวดที่เหลือ (ไม่บังคับ)").fill("2");
+  await loanDialog.getByRole("button", { name: "บันทึก" }).click();
+  await expect(page.getByTestId("installments-remaining")).toHaveText("เหลืออีก 2 งวด จาก 2 งวด");
+
+  await page.getByRole("link", { name: "บิลรายเดือน" }).first().click();
+  await page.getByRole("button", { name: "รายการประจำ", exact: true }).first().click();
+  const ruleDialog = page.getByRole("dialog");
+  await ruleDialog.getByLabel("ชื่อรายการ").fill("งวดรถ");
+  await ruleDialog.getByLabel("ยอดต่อเดือน (บาท)").fill("9200");
+  await ruleDialog.getByLabel("วันที่ (1-31)").fill("28");
+  await ruleDialog.getByLabel("ประเภท").selectOption("loan_payment");
+  await ruleDialog.getByLabel("สินเชื่อ").selectOption({ label: "ผ่อนรถ" });
+  await ruleDialog.getByRole("button", { name: "บันทึก" }).click();
+  await expect(ruleDialog).toBeHidden();
+
+  await page.getByTestId("bill-row").getByRole("button", { name: "บันทึกชำระ" }).click();
+  const payDialog = page.getByRole("dialog");
+  await payDialog.getByLabel("ดอกเบี้ย").fill("1200");
+  await payDialog.getByRole("button", { name: "ยืนยันการชำระ" }).click();
+  await expect(payDialog).toBeHidden();
+
+  await page.getByRole("link", { name: "หนี้สิน" }).first().click();
+  await expect(page.getByTestId("installments-remaining")).toHaveText("เหลืออีก 1 งวด จาก 2 งวด");
+});
+
 test("works at phone width with no sideways scroll", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await seed(page);

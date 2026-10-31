@@ -17,7 +17,10 @@ import type {
   AccountType,
   BillPayment,
   CashflowKind,
+  BillPaymentPosting,
   FixedCostRule,
+  LoanAccount,
+  LoanPayment,
   MonthlyBill,
   Transaction,
 } from "./types";
@@ -137,6 +140,42 @@ export function deriveBill(bill: MonthlyBill, payments: BillPayment[], today: st
 
 export function deriveBills(bills: MonthlyBill[], payments: BillPayment[], today: string): DerivedBill[] {
   return bills.map((b) => deriveBill(b, payments, today));
+}
+
+// ---------------------------------------------------------------------------
+// Loan installments
+// ---------------------------------------------------------------------------
+
+export interface InstallmentData {
+  loanPayments: LoanPayment[];
+  monthlyBills: MonthlyBill[];
+  billPayments: BillPayment[];
+  billPaymentPostings: BillPaymentPosting[];
+}
+
+/**
+ * Installments paid so far: each loan bill paid in full, however many partial
+ * payments it took, plus each payment recorded directly on the debts page.
+ * Derived from current state, so reversing a payment gives the installment back.
+ */
+export function computeInstallmentsPaid(loanId: string, data: InstallmentData): number {
+  const fromBills = new Set(data.billPaymentPostings.map((p) => p.loanPaymentId));
+  const direct = data.loanPayments.filter(
+    (p) => p.loanAccountId === loanId && !p.reversalOfLoanPaymentId && !fromBills.has(p.id),
+  ).length;
+  const billed = data.monthlyBills.filter(
+    (b) =>
+      b.loanAccountId === loanId &&
+      b.cashflowKindSnapshot === "loan_payment" &&
+      deriveBill(b, data.billPayments, "").status === "paid",
+  ).length;
+  return direct + billed;
+}
+
+/** Null when the loan has no installment count set. */
+export function computeRemainingInstallments(loan: LoanAccount, data: InstallmentData): number | null {
+  if (loan.installmentsPlanned === null || loan.installmentsPlanned === undefined) return null;
+  return Math.max(loan.installmentsPlanned - computeInstallmentsPaid(loan.id, data), 0);
 }
 
 // ---------------------------------------------------------------------------

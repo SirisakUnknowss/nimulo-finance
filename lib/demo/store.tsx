@@ -85,6 +85,7 @@ interface DemoStoreApi {
   reopenBill: (id: string) => void;
   recordBillPayment: (input: bills.RecordPaymentInput) => void;
   reverseBillPayment: (id: string, reason: string) => void;
+  setLoanInstallments: (loanId: string, remaining: number | null) => void;
 }
 
 const DemoStoreContext = createContext<DemoStoreApi | null>(null);
@@ -381,6 +382,11 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
     [applyBill],
   );
 
+  const setLoanInstallments: DemoStoreApi["setLoanInstallments"] = useCallback(
+    (loanId, remaining) => applyBill((d) => bills.setLoanInstallments(d, loanId, remaining)),
+    [applyBill],
+  );
+
   const value = useMemo<DemoStoreApi>(
     () => ({
       data,
@@ -425,6 +431,7 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
       reopenBill,
       recordBillPayment,
       reverseBillPayment,
+      setLoanInstallments,
     }),
     [
       data,
@@ -468,6 +475,7 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
       reopenBill,
       recordBillPayment,
       reverseBillPayment,
+      setLoanInstallments,
     ],
   );
 

@@ -150,6 +150,8 @@ export interface LoanAccount {
   minimumPayment?: number | null;
   dueDayOfMonth?: number | null;
   startDate: string;
+  /** Installments in total, counting any already paid here. Remaining is derived, never stored. */
+  installmentsPlanned?: number | null;
   archived: boolean;
 }
 

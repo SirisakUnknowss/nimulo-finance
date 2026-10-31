@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Label, Select } from "@/components/ui/input";
 import { CASHFLOW_KIND_LABELS } from "@/components/bills/bill-status-badge";
 import { TRANSFER_KINDS } from "@/lib/finance/bills";
@@ -66,7 +67,7 @@ export function BillClassificationFields({
             <option value="">เลือกสินเชื่อ</option>
             {loans.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
           </Select>
-          {loans.length === 0 && <p className="mt-1 text-xs text-muted-foreground">เพิ่มสินเชื่อได้ที่หน้าหนี้สิน</p>}
+          {loans.length === 0 && <p className="mt-1 text-xs text-muted-foreground">ยังไม่มีสินเชื่อ <Link href="/debts" className="text-accent underline underline-offset-2">เพิ่มได้ที่หน้าหนี้สิน</Link></p>}
         </div>
       )}
 

@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input, Label, Select } from "@/components/ui/input";
 import { Badge, EmptyState, Progress } from "@/components/ui/misc";
-import { Plus } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
+import { BillError } from "@/lib/finance/bills";
 import { useFinanceData } from "@/lib/hooks/use-finance-data";
 import { formatTHB, formatDateThai } from "@/lib/utils";
 
 export default function DebtsPage() {
-  const { loansWithSummary, addLoan, addLoanPayment, addTransaction, accountsWithBalances, data } = useFinanceData();
+  const { loansWithSummary, addLoan, addLoanPayment, addTransaction, accountsWithBalances, setLoanInstallments, data } = useFinanceData();
   const [payOpen, setPayOpen] = useState<string | null>(null);
   const [principal, setPrincipal] = useState("");
   const [interest, setInterest] = useState("");
@@ -24,6 +25,11 @@ export default function DebtsPage() {
   const [minimumPayment, setMinimumPayment] = useState("");
   const [dueDay, setDueDay] = useState("");
   const [startDate, setStartDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [installments, setInstallments] = useState("");
+
+  const [installmentLoanId, setInstallmentLoanId] = useState<string | null>(null);
+  const [installmentValue, setInstallmentValue] = useState("");
+  const [installmentError, setInstallmentError] = useState("");
 
   const interestCategory = data.categories.find((c) => c.id === "cat_interest") ?? data.categories.find((c) => c.kind === "expense");
   const totalOutstanding = loansWithSummary.reduce((s, l) => s + l.remainingPrincipal, 0);
@@ -86,9 +92,27 @@ export default function DebtsPage() {
       dueDayOfMonth: Number(dueDay) >= 1 && Number(dueDay) <= 31 ? Number(dueDay) : null,
       startDate,
       accountId: null,
+      installmentsPlanned: installments === "" ? null : Number(installments),
     });
-    setLoanName(""); setOpeningPrincipal(""); setInterestRate(""); setMinimumPayment(""); setDueDay("");
+    setLoanName(""); setOpeningPrincipal(""); setInterestRate(""); setMinimumPayment(""); setDueDay(""); setInstallments("");
     setLoanOpen(false);
+  }
+
+  function openInstallments(loanId: string, remaining: number | null) {
+    setInstallmentValue(remaining === null ? "" : String(remaining));
+    setInstallmentError("");
+    setInstallmentLoanId(loanId);
+  }
+
+  function handleSaveInstallments(e: React.FormEvent) {
+    e.preventDefault();
+    if (!installmentLoanId) return;
+    try {
+      setLoanInstallments(installmentLoanId, installmentValue === "" ? null : Number(installmentValue));
+      setInstallmentLoanId(null);
+    } catch (err) {
+      setInstallmentError(err instanceof BillError ? err.message : "บันทึกไม่สำเร็จ");
+    }
   }
 
   const loanDialog = (
@@ -108,9 +132,15 @@ export default function DebtsPage() {
             <div><Label>ยอดผ่อนต่อเดือน (ไม่บังคับ)</Label><Input type="number" min="0" step="any" value={minimumPayment} onChange={(e) => setMinimumPayment(e.target.value)} /></div>
             <div><Label>ครบกำหนดทุกวันที่ (ไม่บังคับ)</Label><Input type="number" min="1" max="31" value={dueDay} onChange={(e) => setDueDay(e.target.value)} /></div>
           </div>
-          <div>
-            <Label>วันที่เริ่มบันทึก</Label>
-            <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} required />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>วันที่เริ่มบันทึก</Label>
+              <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} required />
+            </div>
+            <div>
+              <Label htmlFor="loan-installments">จำนวนงวดที่เหลือ (ไม่บังคับ)</Label>
+              <Input id="loan-installments" type="number" min="0" step="1" value={installments} onChange={(e) => setInstallments(e.target.value)} />
+            </div>
           </div>
           <p className="text-xs text-muted-foreground">บัตรเครดิตให้เพิ่มเป็นบัญชีประเภท &quot;บัตรเครดิต&quot; ที่หน้าบัญชี ยอดหนี้จะคำนวณจากการใช้จ่ายและการชำระบิล</p>
           <DialogFooter>
@@ -147,7 +177,7 @@ export default function DebtsPage() {
       {loanDialog}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {loansWithSummary.map(({ loan, remainingPrincipal, interestPaidTotal, payments }) => {
+        {loansWithSummary.map(({ loan, remainingPrincipal, interestPaidTotal, payments, installmentsRemaining }) => {
           const progressPaid = loan.openingPrincipal > 0 ? ((loan.openingPrincipal - remainingPrincipal) / loan.openingPrincipal) * 100 : 0;
           return (
             <Card key={loan.id}>
@@ -174,6 +204,18 @@ export default function DebtsPage() {
                   {loan.dueDayOfMonth && <p>ครบกำหนดทุกวันที่ {loan.dueDayOfMonth}</p>}
                   <p>ดอกเบี้ยจ่ายสะสม {formatTHB(interestPaidTotal)}</p>
                 </div>
+                {loan.kind === "installment_loan" && (
+                  <div className="flex items-center justify-between gap-2 text-sm">
+                    <span data-testid="installments-remaining" className="font-medium">
+                      {installmentsRemaining === null
+                        ? "ยังไม่ได้ระบุจำนวนงวด"
+                        : installmentsRemaining === 0
+                          ? "ผ่อนครบทุกงวดแล้ว"
+                          : `เหลืออีก ${installmentsRemaining} งวด จาก ${loan.installmentsPlanned} งวด`}
+                    </span>
+                    <Button size="sm" variant="ghost" aria-label={`แก้จำนวนงวด ${loan.name}`} onClick={() => openInstallments(loan.id, installmentsRemaining)}><Pencil className="h-4 w-4" /></Button>
+                  </div>
+                )}
                 {payments.length > 0 && (
                   <div className="max-h-32 overflow-y-auto border-t border-border pt-2 scroll-thin">
                     {payments.slice(-5).reverse().map((p) => (
@@ -189,6 +231,24 @@ export default function DebtsPage() {
           );
         })}
       </div>
+
+      <Dialog open={!!installmentLoanId} onOpenChange={(o) => !o && setInstallmentLoanId(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>จำนวนงวดที่เหลือ</DialogTitle></DialogHeader>
+          <form onSubmit={handleSaveInstallments} className="space-y-3">
+            <div>
+              <Label htmlFor="edit-installments">นับจากวันนี้ เหลืออีกกี่งวด</Label>
+              <Input id="edit-installments" type="number" min="0" step="1" value={installmentValue} onChange={(e) => setInstallmentValue(e.target.value)} />
+            </div>
+            <p className="text-xs text-muted-foreground">จำนวนงวดจะลดเองเมื่อบิลผ่อนจ่ายครบ หรือเมื่อบันทึกการชำระในหน้านี้ และระบบจะหยุดสร้างบิลเมื่อครบงวด เว้นว่างไว้หากไม่ต้องการนับงวด</p>
+            {installmentError && <p role="alert" className="text-sm text-danger">{installmentError}</p>}
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setInstallmentLoanId(null)}>ยกเลิก</Button>
+              <Button type="submit">บันทึก</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={!!payOpen} onOpenChange={(o) => !o && setPayOpen(null)}>
         <DialogContent>

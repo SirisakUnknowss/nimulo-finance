@@ -20,6 +20,9 @@ import {
   bangkokDate,
   bangkokPeriod,
   computeBillPaidNet,
+  computeInstallmentsPaid,
+  computeRemainingInstallments,
+  deriveBill,
   dueDateFor,
   fromSatang,
   isValidPeriod,
@@ -86,15 +89,41 @@ function billFromRule(rule: FixedCostRule, period: string, now: string): Monthly
   };
 }
 
-/** Creates any missing bills for these months. Never writes to the ledger. Returns the same object when nothing was missing. */
+/** For loans with an installment count: how many more bills may still be created. */
+function installmentSlots(state: BillState): Map<string, number> {
+  const slots = new Map<string, number>();
+  for (const loan of state.loans) {
+    const remaining = computeRemainingInstallments(loan, state);
+    if (remaining === null) continue;
+    const open = state.monthlyBills.filter((b) => {
+      if (b.loanAccountId !== loan.id || b.cashflowKindSnapshot !== "loan_payment") return false;
+      const { status } = deriveBill(b, state.billPayments, "");
+      return status === "unpaid" || status === "partially_paid";
+    }).length;
+    slots.set(loan.id, remaining - open);
+  }
+  return slots;
+}
+
+/**
+ * Creates any missing bills for these months, earliest first, stopping a loan's
+ * bills once its installments are used up. Never writes to the ledger. Returns
+ * the same object when nothing was missing.
+ */
 export function ensureBills<S extends BillState>(state: S, periods: string[], now: Date = new Date()): S {
   const existing = new Set(state.monthlyBills.map((b) => `${b.fixedCostRuleId}|${b.period}`));
+  const slots = installmentSlots(state);
   const added: MonthlyBill[] = [];
-  for (const period of periods) {
+  for (const period of [...periods].sort()) {
     if (!isValidPeriod(period)) continue;
     for (const rule of state.fixedCostRules) {
       const key = `${rule.id}|${period}`;
       if (!ruleAppliesTo(rule, period) || existing.has(key)) continue;
+      const loanSlots = rule.cashflowKind === "loan_payment" && rule.loanAccountId ? slots.get(rule.loanAccountId) : undefined;
+      if (loanSlots !== undefined) {
+        if (loanSlots <= 0) continue;
+        slots.set(rule.loanAccountId!, loanSlots - 1);
+      }
       existing.add(key);
       added.push(billFromRule(rule, period, now.toISOString()));
     }
@@ -277,6 +306,20 @@ export function cancelBill<S extends BillState>(state: S, billId: string, now: D
 
 export function reopenBill<S extends BillState>(state: S, billId: string, now: Date = new Date()): S {
   return replaceBill(state, { ...requireBill(state, billId), lifecycleState: "active", skipReason: null }, now);
+}
+
+// ---------------------------------------------------------------------------
+// Loan installments
+// ---------------------------------------------------------------------------
+
+/** Sets how many installments are left from today. Null clears the count. */
+export function setLoanInstallments<S extends BillState>(state: S, loanId: string, remaining: number | null): S {
+  if (!state.loans.some((l) => l.id === loanId)) throw new BillError("ไม่พบสินเชื่อนี้");
+  if (remaining !== null && (!Number.isInteger(remaining) || remaining < 0)) {
+    throw new BillError("จำนวนงวดต้องเป็นจำนวนเต็มและไม่ติดลบ");
+  }
+  const installmentsPlanned = remaining === null ? null : remaining + computeInstallmentsPaid(loanId, state);
+  return { ...state, loans: state.loans.map((l) => (l.id === loanId ? { ...l, installmentsPlanned } : l)) };
 }
 
 // ---------------------------------------------------------------------------
