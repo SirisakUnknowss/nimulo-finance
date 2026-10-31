@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
@@ -146,16 +147,22 @@ export default function TransactionsPage() {
                         </td>
                         <td className="py-2 pr-2 text-muted-foreground">{acc?.name ?? "-"}</td>
                         <td className={`py-2 pr-2 text-right font-medium ${t.type === "income" ? "text-success" : t.type === "expense" ? "text-danger" : "text-transfer"}`}>
-                          {t.type === "income" ? "+" : t.type === "expense" ? "-" : ""}{formatTHB(t.amount)}
+                          {t.type === "income" || t.amount < 0 ? "+" : t.type === "expense" ? "-" : ""}{formatTHB(Math.abs(t.amount))}
                         </td>
                         <td className="py-2 pr-2 text-right">
-                          <button
-                            aria-label="ลบรายการ"
-                            onClick={() => confirm("ยืนยันลบรายการนี้หรือไม่?") && deleteTransaction(t.id)}
-                            className="rounded p-1 text-muted-foreground hover:bg-accent-soft hover:text-danger"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
+                          {t.billPaymentId ? (
+                            <Link href="/bills" className="text-xs text-muted-foreground hover:text-accent" title="รายการนี้มาจากการชำระบิล ย้อนรายการได้ที่หน้าบิล">
+                              จากบิล
+                            </Link>
+                          ) : (
+                            <button
+                              aria-label="ลบรายการ"
+                              onClick={() => confirm("ยืนยันลบรายการนี้หรือไม่?") && deleteTransaction(t.id)}
+                              className="rounded p-1 text-muted-foreground hover:bg-accent-soft hover:text-danger"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     );

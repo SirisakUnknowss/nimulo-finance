@@ -21,6 +21,18 @@ describe("backup", () => {
     expect(parseBackup(text).snapshots).toEqual([]);
   });
 
+  it("restores a v1 backup from before bills existed", () => {
+    const { fixedCostRules, monthlyBills, billPayments, billPaymentPostings, ...rest } = buildEmptyDemoData();
+    void [fixedCostRules, monthlyBills, billPayments, billPaymentPostings];
+    const restored = parseBackup(JSON.stringify({ app: "nimulo", version: 1, data: rest }));
+    expect(restored.fixedCostRules).toEqual([]);
+    expect(restored.billPaymentPostings).toEqual([]);
+  });
+
+  it("rejects backups from a newer format", () => {
+    expect(() => parseBackup(JSON.stringify({ app: "nimulo", version: 3, data: buildEmptyDemoData() }))).toThrow(BackupError);
+  });
+
   it("rejects non-JSON, other apps' files, and malformed records", () => {
     expect(() => parseBackup("date,amount\n2026-01-01,100")).toThrow(BackupError);
     expect(() => parseBackup(JSON.stringify({ app: "other", version: 1, data: {} }))).toThrow(BackupError);

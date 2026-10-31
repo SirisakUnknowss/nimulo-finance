@@ -10,6 +10,7 @@ import { CashFlowChart } from "@/components/charts/cash-flow-chart";
 import { CategoryPieChart } from "@/components/charts/category-pie-chart";
 import { TrendLineChart } from "@/components/charts/trend-line-chart";
 import { OnboardingWizard } from "@/components/onboarding/onboarding-wizard";
+import { BillsOverviewCard } from "@/components/bills/bills-overview-card";
 import { formatTHB, monthLabelThai, periodBounds, currentPeriod, shiftPeriod } from "@/lib/utils";
 import { computeNetWorth, computePeriodTotals } from "@/lib/finance/calculations";
 
@@ -85,6 +86,7 @@ export default function OverviewPage() {
   const expenseSlices = useMemo(() => {
     const byCategory = finance.expenseByCategory(start, end);
     return Object.entries(byCategory)
+      .filter(([, value]) => value > 0) // a fully reversed bill payment nets to zero
       .map(([catId, value]) => {
         const cat = finance.categoryById.get(catId);
         return { name: cat?.name ?? "ไม่ระบุหมวดหมู่", value, color: cat?.color ?? "#999" };
@@ -198,6 +200,8 @@ export default function OverviewPage() {
           </CardContent>
         </Card>
       </div>
+
+      <BillsOverviewCard />
 
       {(range === "6m" || range === "12m") && (
         <Card>

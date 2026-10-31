@@ -85,3 +85,62 @@ export const holdingSchema = z.object({
   fxRateToBase: z.number().positive().nullable().optional(),
   fxRateDate: z.string().nullable().optional(),
 });
+
+export const cashflowKindSchema = z.enum(["expense", "loan_payment", "credit_card_payment", "transfer", "saving", "investment"]);
+
+const periodSchema = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, "รูปแบบเดือนไม่ถูกต้อง");
+
+const billClassification = {
+  cashflowKind: cashflowKindSchema,
+  categoryId: z.string().nullable().optional(),
+  targetAccountId: z.string().nullable().optional(),
+  loanAccountId: z.string().nullable().optional(),
+  sourceAccountId: z.string().nullable().optional(),
+};
+
+/** Which linked records each kind needs in order to post correctly when paid. */
+function refineBillClassification(val: z.infer<z.ZodObject<typeof billClassification>>, ctx: z.RefinementCtx) {
+  if (val.cashflowKind === "expense" && !val.categoryId) {
+    ctx.addIssue({ code: "custom", message: "กรุณาเลือกหมวดหมู่", path: ["categoryId"] });
+  }
+  if (val.cashflowKind === "loan_payment" && !val.loanAccountId) {
+    ctx.addIssue({ code: "custom", message: "กรุณาเลือกสินเชื่อ", path: ["loanAccountId"] });
+  }
+  if (["credit_card_payment", "transfer", "saving", "investment"].includes(val.cashflowKind)) {
+    if (!val.targetAccountId) {
+      ctx.addIssue({ code: "custom", message: "กรุณาเลือกบัญชีปลายทาง", path: ["targetAccountId"] });
+    } else if (val.targetAccountId === val.sourceAccountId) {
+      ctx.addIssue({ code: "custom", message: "บัญชีต้นทางและปลายทางต้องต่างกัน", path: ["targetAccountId"] });
+    }
+  }
+}
+
+export const fixedCostRuleSchema = z
+  .object({
+    name: z.string().trim().min(1, "กรุณาระบุชื่อรายการ"),
+    amount: z.number().nonnegative("จำนวนเงินต้องไม่ติดลบ"),
+    amountMode: z.enum(["fixed", "estimate"]),
+    dueRule: z.enum(["day_of_month", "last_day"]),
+    dueDay: z.number().int().min(1, "วันครบกำหนดต้องอยู่ระหว่าง 1-31").max(31, "วันครบกำหนดต้องอยู่ระหว่าง 1-31").nullable(),
+    startMonth: periodSchema,
+    endMonth: periodSchema.nullable().optional(),
+    ...billClassification,
+  })
+  .superRefine((val, ctx) => {
+    refineBillClassification(val, ctx);
+    if (val.dueRule === "day_of_month" && val.dueDay === null) {
+      ctx.addIssue({ code: "custom", message: "กรุณาระบุวันครบกำหนด", path: ["dueDay"] });
+    }
+    if (val.endMonth && val.endMonth < val.startMonth) {
+      ctx.addIssue({ code: "custom", message: "เดือนสิ้นสุดต้องไม่ก่อนเดือนเริ่มต้น", path: ["endMonth"] });
+    }
+  });
+
+export const oneTimeBillSchema = z
+  .object({
+    name: z.string().trim().min(1, "กรุณาระบุชื่อรายการ"),
+    amount: z.number().positive("จำนวนเงินต้องมากกว่า 0"),
+    dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "กรุณาระบุวันครบกำหนด"),
+    ...billClassification,
+  })
+  .superRefine(refineBillClassification);

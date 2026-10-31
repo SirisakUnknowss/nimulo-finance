@@ -57,7 +57,7 @@ export default function ReportsPage() {
   const yearEnd = `${new Date().getFullYear()}-12-31`;
   const expenseByCategory = finance.expenseByCategory(yearStart, yearEnd);
   const incomeByCategory = finance.incomeByCategory(yearStart, yearEnd);
-  const expenseSlices = Object.entries(expenseByCategory).map(([id, value], i) => ({ name: categoryById.get(id)?.name ?? "อื่นๆ", value, color: PALETTE[i % PALETTE.length] }));
+  const expenseSlices = Object.entries(expenseByCategory).filter(([, value]) => value > 0).map(([id, value], i) => ({ name: categoryById.get(id)?.name ?? "อื่นๆ", value, color: PALETTE[i % PALETTE.length] }));
   const incomeSlices = Object.entries(incomeByCategory).map(([id, value], i) => ({ name: categoryById.get(id)?.name ?? "อื่นๆ", value, color: PALETTE[i % PALETTE.length] }));
 
   const currentBudgetStatuses = finance.budgetStatuses(nowPeriod);

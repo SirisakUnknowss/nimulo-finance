@@ -1,8 +1,8 @@
 # nimulo
 
 nimulo — "Money, made simple." A minimalist personal finance dashboard: track
-income, expenses, accounts, budgets, goals, investments, and debts in one
-place. The interface language is Thai; code, database identifiers, and this
+income, expenses, bills, accounts, budgets, goals, investments, and debts in
+one place. The interface language is Thai; code, database identifiers, and this
 documentation are in English.
 
 The app ships as a working MVP — every page reads and writes real data
@@ -127,6 +127,7 @@ verified result, not an assumption.
 app/
   (app)/                  # authenticated app shell (sidebar/header/mobile nav)
     overview/             # Page 1 — net worth, cash flow, category breakdown
+    bills/                # Monthly bills, fixed cost rules, payment history
     transactions/         # Page 2 — CRUD, filters, CSV import/export, recurring
     accounts/              # Page 3 — accounts, balances, transfers
     budgets/               # Page 4 — monthly budgets per category
@@ -141,6 +142,7 @@ components/
   shell/                   # Sidebar, Header, MobileNav, nav item config
   charts/                  # reusable Recharts wrappers
   transactions/            # quick-add dialog, CSV import dialog
+  bills/                   # bill, rule and payment dialogs, overview card
 lib/
   finance/
     types.ts               # shared domain types (documented sign conventions)
@@ -174,7 +176,15 @@ e2e/
   accounts, where the stored/derived balance is a positive **liability**
   (amount owed).
 - `transactions.amount` is always positive; `type` (income/expense/transfer)
-  determines cash-flow direction, never the sign of `amount`.
+  determines cash-flow direction, never the sign of `amount`. The one exception
+  is the contra entry that reverses a bill payment (see below).
+- A monthly bill is an obligation, not a transaction: generating one never
+  changes a balance. Only recording a payment posts to the ledger, once per
+  idempotency key, all or nothing. Those ledger rows are read-only; undoing one
+  means reversing the payment, which appends contra entries dated like the
+  originals and keeps the originals as history. `lib/finance/bills.ts` (demo
+  mode) and the RPCs in `supabase/migrations/0003_bills.sql` implement the same
+  rules and must change together.
 - Transfers are excluded from income/expense/budget totals everywhere.
 - A credit card purchase is one `expense`; paying the bill is a `transfer`
   (cash → credit card account) and is never counted as a second expense.

@@ -16,7 +16,10 @@
  *   the outstanding liability.
  * - Transaction `amount` is always a positive number; the transaction
  *   `type` (income | expense | transfer) determines its cash-flow
- *   direction, not the sign of `amount`.
+ *   direction, not the sign of `amount`. The one exception is a contra
+ *   entry reversing a bill payment (`reversalOfTransactionId` set): an
+ *   expense is undone by an equal negative expense on the same date, so
+ *   every existing total nets out without changing how it is calculated.
  */
 
 export type AccountType =
@@ -70,6 +73,10 @@ export interface Transaction {
   /** true when this expense is a loan principal repayment (excluded from budgets) */
   isLoanPrincipalRepayment?: boolean;
   loanAccountId?: string | null;
+  /** Set when this row was posted by a bill payment; such rows are read-only. */
+  billPaymentId?: string | null;
+  /** Set on a contra entry: the transaction this row reverses. */
+  reversalOfTransactionId?: string | null;
   createdAt: string;
 }
 
@@ -154,6 +161,8 @@ export interface LoanPayment {
   principalAmount: number;
   interestAmount: number;
   transactionId?: string | null;
+  /** Set on a contra entry: the loan payment this row reverses (amounts are negative). */
+  reversalOfLoanPaymentId?: string | null;
 }
 
 export type InvestmentAssetType = "stock" | "etf" | "mutual_fund" | "other";
@@ -211,6 +220,103 @@ export interface ExchangeRate {
   currency: string;
   rateToBase: number;
   effectiveDate: string;
+}
+
+/**
+ * Bills & Fixed Costs. A bill is an obligation, not money moving: nothing here
+ * touches an account balance until a BillPayment posts to the ledger.
+ *
+ *   FixedCostRule 1-N MonthlyBill 1-N BillPayment 1-N BillPaymentPosting
+ */
+export type CashflowKind =
+  | "expense"
+  | "loan_payment"
+  | "credit_card_payment"
+  | "transfer"
+  | "saving"
+  | "investment";
+
+export type BillAmountMode = "fixed" | "estimate";
+export type BillDueRule = "day_of_month" | "last_day";
+export type BillLifecycle = "active" | "skipped" | "cancelled";
+
+/** Takes effect from `fromPeriod`; earlier months keep the previous amount. */
+export interface RuleAmountChange {
+  fromPeriod: string; // "YYYY-MM"
+  amount: number;
+}
+
+export interface FixedCostRule {
+  id: string;
+  userId: string;
+  name: string;
+  cashflowKind: CashflowKind;
+  defaultAmount: number; // amount at startMonth; see amountChanges
+  amountChanges: RuleAmountChange[];
+  amountMode: BillAmountMode;
+  frequency: "monthly";
+  dueRule: BillDueRule;
+  dueDay?: number | null; // 1-31, for day_of_month
+  startMonth: string; // "YYYY-MM"
+  endMonth?: string | null;
+  categoryId?: string | null;
+  defaultAccountId?: string | null;
+  targetAccountId?: string | null;
+  loanAccountId?: string | null;
+  note?: string | null;
+  isActive: boolean;
+  archived: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MonthlyBill {
+  id: string;
+  userId: string;
+  fixedCostRuleId?: string | null; // null for a one-time bill
+  period: string; // "YYYY-MM", Asia/Bangkok
+  nameSnapshot: string;
+  cashflowKindSnapshot: CashflowKind;
+  amountDue: number;
+  /** True once the user edited this month by hand; later rule edits leave it alone. */
+  userEdited: boolean;
+  dueDate: string; // ISO date
+  plannedAccountId?: string | null;
+  categoryId?: string | null;
+  targetAccountId?: string | null;
+  loanAccountId?: string | null;
+  lifecycleState: BillLifecycle;
+  note?: string | null;
+  skipReason?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BillPayment {
+  id: string;
+  userId: string;
+  billId: string;
+  amount: number;
+  paidAt: string; // ISO timestamp
+  sourceAccountId: string;
+  postingGroupId: string;
+  idempotencyKey: string;
+  reversedAt?: string | null;
+  reversalReason?: string | null;
+  reference?: string | null;
+  note?: string | null;
+  createdAt: string;
+}
+
+/** Links a payment to exactly one ledger record (a transaction or a loan payment). */
+export interface BillPaymentPosting {
+  id: string;
+  userId: string;
+  billPaymentId: string;
+  transactionId?: string | null;
+  loanPaymentId?: string | null;
+  isReversal: boolean;
+  createdAt: string;
 }
 
 export interface Profile {

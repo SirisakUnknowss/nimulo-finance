@@ -4,6 +4,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { buildDemoData, buildEmptyDemoData, type DemoData } from "./seed";
 import { uid } from "@/lib/utils";
 import { storage } from "./storage";
+import * as bills from "@/lib/finance/bills";
 import type {
   Account,
   Budget,
@@ -29,7 +30,8 @@ async function loadInitial(): Promise<DemoData> {
       // Earlier versions auto-loaded mock seed data; discard it so those
       // browsers start fresh. Data the user created themselves is kept.
       const isOldSeed = parsed.accounts?.some((a) => a.id === "acc_bank_main");
-      if (!isOldSeed) return parsed;
+      // Spread over the empty data so collections added since this was saved exist.
+      if (!isOldSeed) return { ...buildEmptyDemoData(), ...parsed };
     }
   } catch {
     // ignore corrupt storage, fall through to a fresh empty state
@@ -71,6 +73,18 @@ interface DemoStoreApi {
   updateHolding: (id: string, patch: Partial<Holding>) => void;
   addTrade: (t: Omit<InvestmentTrade, "id" | "userId">) => void;
   updateProfile: (patch: Partial<DemoData["profile"]>) => void;
+  /** Bill actions validate first and throw a BillError with nothing written. */
+  ensureBills: (periods: string[]) => void;
+  createFixedCostRule: (input: bills.RuleInput) => void;
+  updateFixedCostRule: (id: string, input: bills.RuleInput, effectiveFrom: string) => void;
+  setFixedCostRuleStatus: (id: string, status: { isActive?: boolean; archived?: boolean }) => void;
+  createOneTimeBill: (input: bills.OneTimeBillInput) => void;
+  updateMonthlyBill: (id: string, patch: bills.BillPatch) => void;
+  skipBill: (id: string, reason: string) => void;
+  cancelBill: (id: string) => void;
+  reopenBill: (id: string) => void;
+  recordBillPayment: (input: bills.RecordPaymentInput) => void;
+  reverseBillPayment: (id: string, reason: string) => void;
 }
 
 const DemoStoreContext = createContext<DemoStoreApi | null>(null);
@@ -140,12 +154,13 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
     return transaction;
   }, []);
 
+  // A bill payment's ledger rows change only through reversal, or the bill and its ledger would disagree.
   const updateTransaction: DemoStoreApi["updateTransaction"] = useCallback((id, patch) => {
-    setData((d) => ({ ...d, transactions: d.transactions.map((t) => (t.id === id ? { ...t, ...patch } : t)) }));
+    setData((d) => ({ ...d, transactions: d.transactions.map((t) => (t.id === id && !t.billPaymentId ? { ...t, ...patch } : t)) }));
   }, []);
 
   const deleteTransaction: DemoStoreApi["deleteTransaction"] = useCallback((id) => {
-    setData((d) => ({ ...d, transactions: d.transactions.filter((t) => t.id !== id) }));
+    setData((d) => ({ ...d, transactions: d.transactions.filter((t) => t.id !== id || t.billPaymentId) }));
   }, []);
 
   const addTransfer: DemoStoreApi["addTransfer"] = useCallback(({ amount, date, fromAccountId, toAccountId, note }) => {
@@ -303,6 +318,69 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
     setData((d) => ({ ...d, profile: { ...d.profile, ...patch } }));
   }, []);
 
+  // Runs against the rendered data so the caller gets any BillError, then again
+  // inside the updater against the latest data, where a same-tick double submit
+  // becomes a no-op through its idempotency key instead of throwing mid-render.
+  const applyBill = useCallback(
+    (transition: (d: DemoData) => DemoData) => {
+      transition(data);
+      setData((d) => {
+        try {
+          return transition(d);
+        } catch {
+          return d;
+        }
+      });
+    },
+    [data],
+  );
+
+  const ensureBills: DemoStoreApi["ensureBills"] = useCallback((periods) => {
+    setData((d) => bills.ensureBills(d, periods));
+  }, []);
+
+  const createFixedCostRule: DemoStoreApi["createFixedCostRule"] = useCallback((input) => {
+    setData((d) => bills.createRule(d, input));
+  }, []);
+
+  const updateFixedCostRule: DemoStoreApi["updateFixedCostRule"] = useCallback(
+    (id, input, effectiveFrom) => applyBill((d) => bills.updateRule(d, id, input, effectiveFrom)),
+    [applyBill],
+  );
+
+  const setFixedCostRuleStatus: DemoStoreApi["setFixedCostRuleStatus"] = useCallback(
+    (id, status) => applyBill((d) => bills.setRuleStatus(d, id, status)),
+    [applyBill],
+  );
+
+  const createOneTimeBill: DemoStoreApi["createOneTimeBill"] = useCallback((input) => {
+    setData((d) => bills.createOneTimeBill(d, input));
+  }, []);
+
+  const updateMonthlyBill: DemoStoreApi["updateMonthlyBill"] = useCallback(
+    (id, patch) => applyBill((d) => bills.updateBill(d, id, patch)),
+    [applyBill],
+  );
+
+  const skipBill: DemoStoreApi["skipBill"] = useCallback(
+    (id, reason) => applyBill((d) => bills.skipBill(d, id, reason)),
+    [applyBill],
+  );
+
+  const cancelBill: DemoStoreApi["cancelBill"] = useCallback((id) => applyBill((d) => bills.cancelBill(d, id)), [applyBill]);
+
+  const reopenBill: DemoStoreApi["reopenBill"] = useCallback((id) => applyBill((d) => bills.reopenBill(d, id)), [applyBill]);
+
+  const recordBillPayment: DemoStoreApi["recordBillPayment"] = useCallback(
+    (input) => applyBill((d) => bills.recordBillPayment(d, input).state),
+    [applyBill],
+  );
+
+  const reverseBillPayment: DemoStoreApi["reverseBillPayment"] = useCallback(
+    (id, reason) => applyBill((d) => bills.reverseBillPayment(d, id, reason)),
+    [applyBill],
+  );
+
   const value = useMemo<DemoStoreApi>(
     () => ({
       data,
@@ -336,6 +414,17 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
       updateHolding,
       addTrade,
       updateProfile,
+      ensureBills,
+      createFixedCostRule,
+      updateFixedCostRule,
+      setFixedCostRuleStatus,
+      createOneTimeBill,
+      updateMonthlyBill,
+      skipBill,
+      cancelBill,
+      reopenBill,
+      recordBillPayment,
+      reverseBillPayment,
     }),
     [
       data,
@@ -368,6 +457,17 @@ export function DemoStoreProvider({ children }: { children: React.ReactNode }) {
       updateHolding,
       addTrade,
       updateProfile,
+      ensureBills,
+      createFixedCostRule,
+      updateFixedCostRule,
+      setFixedCostRuleStatus,
+      createOneTimeBill,
+      updateMonthlyBill,
+      skipBill,
+      cancelBill,
+      reopenBill,
+      recordBillPayment,
+      reverseBillPayment,
     ],
   );
 

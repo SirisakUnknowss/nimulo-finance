@@ -1,13 +1,17 @@
 import type {
   Account,
+  BillPayment,
+  BillPaymentPosting,
   Budget,
   Category,
+  FixedCostRule,
   Goal,
   GoalContribution,
   Holding,
   InvestmentTrade,
   LoanAccount,
   LoanPayment,
+  MonthlyBill,
   Portfolio,
   PortfolioSnapshot,
   Profile,
@@ -31,6 +35,10 @@ export interface DemoData {
   holdings: Holding[];
   trades: InvestmentTrade[];
   snapshots: PortfolioSnapshot[];
+  fixedCostRules: FixedCostRule[];
+  monthlyBills: MonthlyBill[];
+  billPayments: BillPayment[];
+  billPaymentPostings: BillPaymentPosting[];
 }
 
 const USER = "demo-user";
@@ -187,6 +195,10 @@ export function buildDemoData(): DemoData {
     holdings,
     trades,
     snapshots,
+    fixedCostRules: [],
+    monthlyBills: [],
+    billPayments: [],
+    billPaymentPostings: [],
   };
 }
 
@@ -212,5 +224,9 @@ export function buildEmptyDemoData(): DemoData {
     holdings: [],
     trades: [],
     snapshots: [],
+    fixedCostRules: [],
+    monthlyBills: [],
+    billPayments: [],
+    billPaymentPostings: [],
   };
 }

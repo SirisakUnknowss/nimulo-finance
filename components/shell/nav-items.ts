@@ -1,5 +1,6 @@
 import {
   LayoutDashboard,
+  ReceiptText,
   ArrowLeftRight,
   Wallet,
   PiggyBank,
@@ -20,6 +21,7 @@ export interface NavItem {
 
 export const NAV_ITEMS: NavItem[] = [
   { href: "/overview", label: "ภาพรวม", icon: LayoutDashboard },
+  { href: "/bills", label: "บิลรายเดือน", icon: ReceiptText },
   { href: "/transactions", label: "รายการเงิน", icon: ArrowLeftRight },
   { href: "/accounts", label: "บัญชีของฉัน", icon: Wallet },
   { href: "/budgets", label: "งบประมาณ", icon: PiggyBank },

@@ -9,7 +9,9 @@ import type { DemoData } from "@/lib/demo/seed";
  */
 
 const BACKUP_APP = "nimulo";
-const BACKUP_VERSION = 1;
+// v2 added bills. Bumped so an older build refuses the file instead of
+// restoring it and silently dropping them; v1 files still restore here.
+const BACKUP_VERSION = 2;
 
 // Records are checked for an id and otherwise kept as-is, so a backup from a
 // slightly newer build with extra fields still restores.
@@ -18,7 +20,7 @@ const records = z.array(record).default([]);
 
 const backupSchema = z.object({
   app: z.literal(BACKUP_APP),
-  version: z.literal(BACKUP_VERSION),
+  version: z.union([z.literal(1), z.literal(BACKUP_VERSION)]),
   exportedAt: z.string().optional(),
   data: z.object({
     profile: z.object({ displayName: z.string() }).passthrough(),
@@ -35,6 +37,10 @@ const backupSchema = z.object({
     holdings: records,
     trades: records,
     snapshots: records,
+    fixedCostRules: records,
+    monthlyBills: records,
+    billPayments: records,
+    billPaymentPostings: records,
   }),
 });
 
@@ -72,5 +78,5 @@ export function parseBackup(text: string): DemoData {
 }
 
 export function summarizeBackup(data: DemoData): string {
-  return `บัญชี ${data.accounts.length} · รายการเงิน ${data.transactions.length} · งบประมาณ ${data.budgets.length} · เป้าหมาย ${data.goals.length} · หนี้สิน ${data.loans.length} · พอร์ต ${data.portfolios.length}`;
+  return `บัญชี ${data.accounts.length} · รายการเงิน ${data.transactions.length} · งบประมาณ ${data.budgets.length} · เป้าหมาย ${data.goals.length} · หนี้สิน ${data.loans.length} · พอร์ต ${data.portfolios.length} · บิล ${data.monthlyBills.length}`;
 }
